@@ -143,6 +143,7 @@ Hay scripts de comprobación que trabajan contra `npm run preview` (puerto 4321)
 | `npm run shots:scroll -- /proyectos/goab/ 1440 16` | Capturas a lo largo del scroll (útil con secciones fijadas) y fps de la escena de arena |
 | `npm run test:transitions` | Comprueba las cortinillas entre páginas |
 | `npm run lighthouse -- / /proyectos/goab/` | Lighthouse móvil (añade `--desktop` para escritorio) |
+| `node scripts/test-lightbox.mjs [url]` | Comprueba que las imágenes ampliadas se ven enteras, sin recortes |
 
 Último resultado: Performance 95–100, Accessibility 100, Best Practices 100 y SEO 100 en todas las páginas, en móvil y escritorio. LCP ≤ 2,4 s en 4G simulada y CLS 0.
 

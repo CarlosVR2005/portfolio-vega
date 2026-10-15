@@ -88,13 +88,15 @@ const { closeLabel, zoomLabel } = Astro.props;
   .lb-frame {
     position: absolute;
     inset: 3.5rem 1rem 3rem;
-    display: grid;
-    place-items: center;
     overflow: hidden;
   }
+  /* La imagen ocupa todo el marco y se encaja entera (sin recortes) con object-fit */
   .lb-img {
-    max-width: 100%;
-    max-height: 100%;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
     object-fit: contain;
     cursor: zoom-in;
     transition: transform 0.5s var(--ease-out-expo);
