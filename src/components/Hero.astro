@@ -1,0 +1,472 @@
+---
+import Image from './Img.astro';
+import site from '../content/site.json';
+import { t, isPending, type Locale } from '../i18n/ui';
+import goab from '../assets/projects/goab/goab-crouch-cutout.png';
+import polas from '../assets/projects/polas/cover-polas.png';
+import july from '../assets/projects/starbucks/july-4th.png';
+import spine from '../assets/projects/polas/character-spine.png';
+import poppies from '../assets/projects/polas/poppies.png';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const es = locale === 'es';
+const tagline = site.tagline[locale];
+const taglineIsPending = /^\[(FRASE|VEGA)/.test(tagline);
+
+// Fragmentos del collage: profundidad (parallax), posición y giro.
+const pieces = [
+  {
+    img: poppies,
+    alt: es ? 'Amapolas dibujadas a bolígrafo (POLAS).' : 'Ballpoint-pen poppies (POLAS).',
+    cls: 'p-poppies',
+    depth: 0.35,
+    widths: [320, 520],
+    sizes: '(min-width: 1024px) 22vw, 40vw',
+  },
+  {
+    img: july,
+    alt: es ? 'Detalle de la ilustración del 4 de julio (campaña conceptual).' : 'Detail of the Fourth of July illustration (concept campaign).',
+    cls: 'p-july',
+    depth: 0.8,
+    widths: [280, 440, 640],
+    sizes: '(min-width: 1024px) 17vw, 34vw',
+  },
+  {
+    img: polas,
+    alt: es ? 'Portada del fanzine POLAS.' : 'Cover of the POLAS fanzine.',
+    cls: 'p-polas',
+    depth: 1,
+    widths: [280, 440, 640],
+    sizes: '(min-width: 1024px) 19vw, 38vw',
+  },
+  {
+    img: goab,
+    alt: es ? 'Goab, criatura de arena, agazapado.' : 'Goab, the sand creature, crouching.',
+    cls: 'p-goab',
+    depth: 0.6,
+    widths: [480, 800, 1200],
+    sizes: '(min-width: 1024px) 40vw, 80vw',
+  },
+  {
+    img: spine,
+    alt: es ? 'Personaje de POLAS con la columna a la vista.' : 'POLAS character with an exposed spine.',
+    cls: 'p-spine',
+    depth: 1.25,
+    widths: [200, 360],
+    sizes: '(min-width: 1024px) 9vw, 20vw',
+  },
+];
+---
+
+<section class="hero" data-hero aria-labelledby="hero-title">
+  <div class="wrap hero-grid">
+    <h1 id="hero-title" class="hero-title">
+      <span class="sr-only">{site.name} — {site.role[locale]}</span>
+      <svg class="hero-name" viewBox="0 0 1000 560" aria-hidden="true" focusable="false">
+        <defs>
+          <filter id="ink-edge" x="-10%" y="-20%" width="120%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.035 0.09" numOctaves="3" seed="7" result="n" />
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="38" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+          <mask id="ink-mask" maskUnits="userSpaceOnUse" x="-50" y="-50" width="1100" height="660">
+            <g filter="url(#ink-edge)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="150">
+              <path class="ink-stroke" pathLength="1" d="M-40 100 C 300 60, 700 120, 1040 80" />
+              <path class="ink-stroke" pathLength="1" d="M1040 215 C 700 250, 300 190, -40 230" />
+              <path class="ink-stroke" pathLength="1" d="M-40 350 C 300 320, 700 380, 1040 340" />
+              <path class="ink-stroke" pathLength="1" d="M1040 470 C 700 500, 300 440, -40 490" />
+              <path class="ink-stroke" pathLength="1" d="M-40 575 C 300 545, 700 600, 1040 560" />
+            </g>
+            <rect class="ink-fill" x="-50" y="-50" width="1100" height="660" fill="#fff" opacity="0" />
+          </mask>
+        </defs>
+        <g class="ink-text">
+          <text x="-6" y="240" class="hn-1">Vega</text>
+          <text x="-6" y="520" class="hn-2">Gómez</text>
+        </g>
+      </svg>
+    </h1>
+
+    <div class="hero-copy">
+      <p class="hero-role eyebrow">{site.role[locale]} · {site.location[locale]}</p>
+      <p class="hero-tagline">
+        {
+          taglineIsPending ? (
+            <>
+              <span class="pending">{es ? '[FRASE DE VEGA]' : "[VEGA'S LINE]"}</span>{' '}
+              {site.taglineShort[locale]}
+            </>
+          ) : (
+            tagline
+          )
+        }
+      </p>
+      <p class="hero-studies">{site.studies[locale]}</p>
+      {
+        !isPending(site.availability[locale]) && <p class="hero-availability">{site.availability[locale]}</p>
+      }
+    </div>
+
+    <div class="collage" data-collage aria-hidden="true">
+      {
+        pieces.map((p) => (
+          <figure class:list={['piece', p.cls]} data-depth={p.depth}>
+            <Image src={p.img} alt="" widths={p.widths} sizes={p.sizes} loading="eager" fetchpriority={p.cls === 'p-goab' ? 'high' : 'auto'} />
+          </figure>
+        ))
+      }
+    </div>
+
+    <a href={es ? '#obra' : '#work'} class="hero-scroll eyebrow" data-transition="plain">
+      <span>{t(locale, 'hero.scroll')}</span>
+      <span class="hero-scroll-line" aria-hidden="true"></span>
+    </a>
+  </div>
+  <button type="button" class="intro-skip eyebrow" data-intro-skip hidden>{t(locale, 'hero.skip')}</button>
+</section>
+
+<script>
+  import { onPage, gsap, reducedMotion, finePointer } from '../scripts/motion';
+
+  onPage(() => {
+    const hero = document.querySelector<HTMLElement>('[data-hero]');
+    if (!hero) return;
+    const svg = hero.querySelector<SVGSVGElement>('.hero-name')!;
+    const textGroup = svg.querySelector<SVGGElement>('.ink-text')!;
+    const strokes = svg.querySelectorAll<SVGPathElement>('.ink-stroke');
+    const fill = svg.querySelector<SVGRectElement>('.ink-fill')!;
+    const pieces = gsap.utils.toArray<HTMLElement>('.piece', hero);
+    const copy = hero.querySelectorAll<HTMLElement>('.hero-copy > *, .hero-scroll');
+    const skip = hero.querySelector<HTMLButtonElement>('[data-intro-skip]')!;
+
+    let seen = false;
+    try {
+      seen = sessionStorage.getItem('vg-intro') === '1';
+      sessionStorage.setItem('vg-intro', '1');
+    } catch {}
+
+    // --- Intro: máscara de tinta (≤ 1,8 s, saltable) ---------------------
+    const tl = gsap.timeline({ defaults: { ease: 'power2.inOut' } });
+    if (!reducedMotion()) {
+      textGroup.setAttribute('mask', 'url(#ink-mask)');
+      gsap.set(strokes, { strokeDasharray: 1, strokeDashoffset: 1 });
+      tl.to(strokes, { strokeDashoffset: 0, duration: 0.42, stagger: 0.2 })
+        .to(fill, { opacity: 1, duration: 0.3 }, '-=0.15')
+        .from(pieces, { autoAlpha: 0, y: 60, rotate: (i) => (i % 2 ? 6 : -6), duration: 0.9, ease: 'expo.out', stagger: 0.07 }, 0.55)
+        .from(copy, { autoAlpha: 0, y: 16, duration: 0.6, ease: 'power3.out', stagger: 0.06 }, 0.95)
+        .add(() => textGroup.removeAttribute('mask'));
+
+      if (seen) tl.timeScale(2.2);
+      else {
+        skip.hidden = false;
+        const finish = () => tl.progress(1);
+        skip.addEventListener('click', finish, { once: true });
+        window.addEventListener('keydown', finish, { once: true });
+        hero.addEventListener('pointerdown', finish, { once: true });
+        tl.eventCallback('onComplete', () => {
+          skip.hidden = true;
+          window.removeEventListener('keydown', finish);
+        });
+      }
+    }
+
+    // --- Parallax por capas con el ratón -------------------------------
+    const cleanups: (() => void)[] = [];
+    if (!reducedMotion() && finePointer()) {
+      const movers = pieces.map((el) => {
+        const d = parseFloat(el.dataset.depth || '1');
+        return {
+          d,
+          x: gsap.quickTo(el, 'x', { duration: 1.1, ease: 'power3' }),
+          y: gsap.quickTo(el, 'y', { duration: 1.1, ease: 'power3' }),
+          r: gsap.quickTo(el, 'rotationY', { duration: 1.4, ease: 'power3' }),
+        };
+      });
+      const onMove = (e: PointerEvent) => {
+        const nx = e.clientX / window.innerWidth - 0.5;
+        const ny = e.clientY / window.innerHeight - 0.5;
+        movers.forEach((m) => {
+          m.x(nx * -36 * m.d);
+          m.y(ny * -26 * m.d);
+          m.r(nx * 8 * m.d);
+        });
+      };
+      window.addEventListener('pointermove', onMove, { passive: true });
+      cleanups.push(() => window.removeEventListener('pointermove', onMove));
+    }
+
+    // --- Parallax al hacer scroll ---------------------------------------
+    if (!reducedMotion()) {
+      pieces.forEach((el) => {
+        const d = parseFloat(el.dataset.depth || '1');
+        gsap.to(el.querySelector('img'), {
+          yPercent: -18 * d,
+          ease: 'none',
+          scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true },
+        });
+      });
+      gsap.to(svg, {
+        yPercent: 12,
+        ease: 'none',
+        scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true },
+      });
+    }
+
+    return () => cleanups.forEach((c) => c());
+  });
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    padding-top: calc(var(--header-h) + 1rem);
+    padding-bottom: 2rem;
+    overflow: clip;
+  }
+  .hero-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'title'
+      'collage'
+      'copy'
+      'scroll';
+    gap: 1.25rem;
+  }
+  .hero-title {
+    grid-area: title;
+    position: relative;
+    z-index: 3;
+    margin: 0;
+  }
+  .hero-name {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    fill: var(--fg);
+    font-family: var(--font-display);
+    font-size: 300px;
+    letter-spacing: -0.035em;
+  }
+  /* Halo de papel: las letras quedan "recortadas" sobre las piezas del collage */
+  .hero-name text {
+    stroke: var(--bg);
+    stroke-width: 10px;
+    stroke-linejoin: round;
+    paint-order: stroke fill;
+  }
+  .hero-copy {
+    grid-area: copy;
+    position: relative;
+    z-index: 3;
+    max-width: 34rem;
+    display: grid;
+    gap: 0.6rem;
+  }
+  .hero-role {
+    color: var(--fg-soft);
+  }
+  .hero-tagline {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .hero-tagline .pending {
+    font-family: ui-monospace, monospace;
+    font-size: 0.42em;
+    vertical-align: middle;
+  }
+  .hero-studies,
+  .hero-availability {
+    color: var(--fg-soft);
+    font-size: var(--step--1);
+  }
+
+  /* ---- Collage ---- */
+  .collage {
+    grid-area: collage;
+    position: relative;
+    height: min(118vw, 34rem);
+    perspective: 900px;
+    z-index: 2;
+  }
+  .piece {
+    position: absolute;
+    margin: 0;
+    will-change: transform;
+  }
+  .piece :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .p-poppies {
+    width: 46%;
+    aspect-ratio: 4 / 3;
+    left: 0;
+    top: 2%;
+    rotate: -3deg;
+    opacity: 0.9;
+    box-shadow: 0 10px 30px -18px rgb(0 0 0 / 0.5);
+  }
+  .p-july {
+    width: 34%;
+    aspect-ratio: 3 / 4;
+    right: 4%;
+    top: 0;
+    rotate: 4deg;
+    box-shadow: 0 24px 40px -22px rgb(22 19 15 / 0.65);
+  }
+  .p-polas {
+    width: 40%;
+    aspect-ratio: 4 / 5;
+    left: 8%;
+    bottom: 2%;
+    rotate: -5deg;
+    box-shadow: 0 24px 40px -22px rgb(22 19 15 / 0.7);
+  }
+  .p-polas :global(img) {
+    object-position: 70% 50%;
+  }
+  .p-goab {
+    width: 78%;
+    right: -8%;
+    bottom: 4%;
+    aspect-ratio: 2202 / 1652;
+    z-index: 2;
+    filter: drop-shadow(0 26px 24px rgb(76 52 37 / 0.35));
+  }
+  .p-goab :global(img) {
+    object-fit: contain;
+  }
+  .p-spine {
+    width: 20%;
+    aspect-ratio: 500 / 904;
+    left: 44%;
+    top: 22%;
+    rotate: 2deg;
+    z-index: 3;
+    mix-blend-mode: multiply;
+  }
+  .p-spine :global(img) {
+    object-fit: contain;
+  }
+
+  /* ---- Indicador de scroll ---- */
+  .hero-scroll {
+    grid-area: scroll;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: var(--fg-soft);
+    justify-self: start;
+  }
+  .hero-scroll-line {
+    width: 3.5rem;
+    height: 1px;
+    background: currentColor;
+    transform-origin: left;
+    animation: line 2.4s var(--ease-in-out-quart) infinite;
+  }
+  @keyframes line {
+    0% {
+      transform: scaleX(0);
+    }
+    50% {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+    51% {
+      transform-origin: right;
+    }
+    100% {
+      transform: scaleX(0);
+      transform-origin: right;
+    }
+  }
+  .intro-skip {
+    position: fixed;
+    right: var(--gutter);
+    bottom: 1.25rem;
+    z-index: 120;
+    padding: 0.55rem 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--bg);
+    color: var(--fg);
+  }
+
+  /* ---- Escritorio: nombre a la izquierda, collage a la derecha ---- */
+  @media (min-width: 1024px) {
+    .hero {
+      display: flex;
+      align-items: center;
+    }
+    .hero-grid {
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: 1fr auto auto;
+      grid-template-areas: none;
+      column-gap: 1.5rem;
+      row-gap: 2rem;
+      min-height: calc(100svh - var(--header-h) - 3rem);
+    }
+    .hero-title {
+      grid-column: 1 / span 8;
+      grid-row: 1;
+      align-self: center;
+    }
+    .collage {
+      grid-column: 6 / -1;
+      grid-row: 1 / span 2;
+      height: auto;
+      min-height: 36rem;
+      align-self: stretch;
+    }
+    .hero-copy {
+      grid-column: 1 / span 5;
+      grid-row: 2;
+    }
+    .hero-scroll {
+      grid-column: 1 / span 4;
+      grid-row: 3;
+    }
+    .p-poppies {
+      width: 40%;
+      left: 22%;
+      top: 0;
+    }
+    .p-july {
+      width: 30%;
+      right: 0;
+      top: 8%;
+    }
+    .p-polas {
+      width: 29%;
+      left: 6%;
+      bottom: 0;
+    }
+    .p-goab {
+      width: 82%;
+      right: -4%;
+      bottom: 0;
+    }
+    .p-spine {
+      width: 14%;
+      left: 62%;
+      top: 4%;
+    }
+  }
+  @media (min-width: 1600px) {
+    .collage {
+      min-height: 44rem;
+    }
+  }
+</style>

@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import WorkIndex from '../components/WorkIndex.astro';
+import { isPending, type Locale } from '../i18n/ui';
+import site from '../content/site.json';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const home = new URL(locale === 'es' ? '/' : '/en/', Astro.site).href;
+const ld = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: `${site.name} — ${site.role[locale]}`,
+    url: home,
+    inLanguage: locale,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: site.name,
+    jobTitle: site.role[locale],
+    description: site.taglineShort[locale],
+    url: home,
+    address: { '@type': 'PostalAddress', addressLocality: 'Madrid', addressCountry: 'ES' },
+    alumniOf: { '@type': 'CollegeOrUniversity', name: 'Universidad Francisco de Vitoria' },
+    sameAs: site.social.map((s) => s.url).filter((u) => !isPending(u)),
+  },
+];
+---
+
+<Base locale={locale} alternates={{ es: '/', en: '/en/' }}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(ld)} />
+  <Hero locale={locale} />
+  <WorkIndex locale={locale} />
+</Base>

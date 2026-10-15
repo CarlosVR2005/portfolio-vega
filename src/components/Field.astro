@@ -1,0 +1,12 @@
+---
+/** Muestra un dato de site.json; si está [PENDIENTE…], lo marca visiblemente. */
+import { isPending } from '../i18n/ui';
+interface Props {
+  value: string;
+  as?: 'span' | 'p';
+}
+const { value, as: Tag = 'span' } = Astro.props;
+const pending = isPending(value);
+---
+
+<Tag class:list={[{ pending }]}>{value}</Tag>

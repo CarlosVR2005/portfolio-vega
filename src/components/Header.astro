@@ -1,0 +1,128 @@
+---
+import { routes, t, type Locale } from '../i18n/ui';
+import site from '../content/site.json';
+
+interface Props {
+  locale: Locale;
+  alternates: { es: string; en: string };
+}
+const { locale, alternates } = Astro.props;
+const other: Locale = locale === 'es' ? 'en' : 'es';
+const path = Astro.url.pathname.replace(/\/$/, '') + '/';
+const links = [
+  { href: routes.work[locale], label: t(locale, 'nav.work') },
+  { href: routes.about[locale], label: t(locale, 'nav.about') },
+  { href: routes.contact[locale], label: t(locale, 'nav.contact') },
+];
+---
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a href={routes.home[locale]} class="brand display" data-transition="plain" aria-label={`${site.name} — ${locale === 'es' ? 'inicio' : 'home'}`}>
+      Vega Gómez
+    </a>
+    <nav aria-label={locale === 'es' ? 'Principal' : 'Main'}>
+      <ul class="nav-list">
+        {
+          links.map((l) => (
+            <li>
+              <a
+                href={l.href}
+                class="link-underline"
+                data-transition="plain"
+                aria-current={path === l.href ? 'page' : undefined}
+              >
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <a
+            href={alternates[other]}
+            hreflang={other}
+            lang={other}
+            class="lang"
+            data-transition="plain"
+            aria-label={`${t(locale, 'nav.langShort')} · ${t(locale, 'nav.lang')}`}
+          >
+            {t(locale, 'nav.langShort')}
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 100;
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    color: var(--fg);
+    pointer-events: none;
+  }
+  .site-header::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 -1.5rem;
+    background: linear-gradient(var(--bg) 35%, transparent);
+    opacity: 0.92;
+    pointer-events: none;
+  }
+  .header-inner {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+  .header-inner a {
+    pointer-events: auto;
+  }
+  .brand {
+    font-size: var(--step-1);
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+  .nav-list {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.9rem, 2.4vw, 2.2rem);
+    font-size: var(--step--1);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  [aria-current='page'] {
+    background-size: 100% 1px;
+  }
+  .lang {
+    display: inline-grid;
+    place-items: center;
+    min-width: 2.4rem;
+    height: 2.4rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    transition:
+      background 0.3s,
+      color 0.3s;
+  }
+  .lang:hover {
+    background: var(--fg);
+    color: var(--bg);
+  }
+  @media (max-width: 420px) {
+    .brand {
+      font-size: 1.05rem;
+    }
+    .nav-list {
+      gap: 0.75rem;
+      font-size: 0.78rem;
+    }
+  }
+</style>

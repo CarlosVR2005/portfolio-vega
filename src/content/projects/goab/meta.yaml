@@ -1,0 +1,35 @@
+order: 1
+slug: { es: goab, en: goab }
+title: GOAB
+kicker: { es: "Concept art · Pintura digital", en: "Concept art · Digital painting" }
+year: "2025"  # [PENDIENTE: confirmar año]
+discipline: { es: "Diseño de personaje y entorno", en: "Character & environment design" }
+teaser:
+  es: "El desierto de Goab convertido en criatura: una entidad de arena que encarna la lucha interna de Bastian. Reinterpretación de La historia interminable."
+  en: "The Desert of Goab turned into a creature: a sand entity embodying Bastian's inner struggle. A reinterpretation of The Neverending Story."
+world:
+  id: goab
+  # Muestreado de final-illustration.jpg (k-means)
+  bg: "#251c1a"
+  ink: "#f8eaae"
+  accent: "#cfaa72"
+  # UI: aclarado desde #a37b4f para contraste AA sobre el fondo
+  muted: "#b58c5c"
+  cursor: sand
+  transition: sand
+  wipe: "linear-gradient(180deg, #f8eaae 0%, #cfaa72 35%, #a37b4f 70%, #4c3425 100%)"
+cover:
+  src: ../../../assets/projects/goab/final-illustration.jpg
+  position: "30% 40%"
+  alt:
+    es: "Goab, una criatura gigante de arena con garras curvas, se alza sobre un desierto al atardecer mientras la silueta diminuta de Bastian la observa."
+    en: "Goab, a giant sand creature with curved claws, towers over a desert at dusk while Bastian's tiny silhouette watches."
+basedOn:
+  name: { es: "La historia interminable", en: "The Neverending Story" }
+  author: Michael Ende
+  type: Book
+fragment:
+  src: ../../../assets/projects/goab/goab-crouch-cutout.png
+  alt:
+    es: "Goab agazapado, cuerpo de arena dorada que se deshace en las extremidades."
+    en: "Goab crouching, a golden sand body dissolving at the limbs."

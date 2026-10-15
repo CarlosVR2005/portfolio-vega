@@ -1,0 +1,225 @@
+---
+import Image from '../components/Img.astro';
+import { getImage } from 'astro:assets';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Lightbox from '../components/Lightbox.astro';
+import Zoomable from '../components/Zoomable.astro';
+import { md } from '../lib/md';
+import { cases } from '../projects';
+import { t, projectHref, routes, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  project: CollectionEntry<'projects'>;
+}
+const { locale, project } = Astro.props;
+const d = project.data;
+const all = (await getCollection('projects', (p) => !p.data.draft)).sort((a, b) => a.data.order - b.data.order);
+const next = all[(all.findIndex((p) => p.id === project.id) + 1) % all.length].data;
+const Case = cases[project.id];
+const og = await getImage({ src: d.cover.src, width: 1200, height: 630, fit: 'cover', format: 'jpg', quality: 82 });
+const workLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: d.title,
+  headline: `${d.title} — ${d.kicker[locale]}`,
+  description: d.teaser[locale],
+  genre: d.discipline[locale],
+  dateCreated: d.year,
+  inLanguage: locale,
+  image: new URL(og.src, Astro.site).href,
+  url: new URL(projectHref(locale, d.slug), Astro.site).href,
+  creator: { '@type': 'Person', name: 'Vega Gómez Muñoz', url: new URL(locale === 'es' ? '/' : '/en/', Astro.site).href },
+  ...(d.basedOn ? { isBasedOn: { '@type': d.basedOn.type, name: d.basedOn.name[locale], author: { '@type': 'Person', name: d.basedOn.author } } } : {}),
+};
+const alternates = { es: projectHref('es', d.slug), en: projectHref('en', d.slug) };
+---
+
+<Base locale={locale} title={d.title} description={d.teaser[locale]} alternates={alternates} world={d.world} ogImage={og.src}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(workLd)} />
+  <article class:list={['project', { 'has-case': !!Case }]}>
+    {
+      Case ? (
+        <Case locale={locale} project={project} />
+      ) : (
+        <>
+          <header class="wrap p-head">
+            <p class="eyebrow p-kicker">{d.kicker[locale]} · {d.year}</p>
+            <h1 class="display p-title">{d.title}</h1>
+            <p class="p-teaser">{d.teaser[locale]}</p>
+            {d.disclaimer && <p class="p-disclaimer">{d.disclaimer[locale]}</p>}
+          </header>
+          <figure class="p-cover">
+            <Image src={d.cover.src} alt={d.cover.alt[locale]} widths={[640, 1024, 1600, 2400]} sizes="100vw" loading="eager" fetchpriority="high" style={`object-position:${d.cover.position}`} />
+          </figure>
+          {d.intro && (
+            <section class="wrap p-intro">
+              <p class="p-intro-text" set:html={md(d.intro[locale])} />
+              {d.facts.length > 0 && (
+                <dl class="p-facts">
+                  {d.facts.map((f) => (
+                    <div>
+                      <dt>{f.k[locale]}</dt>
+                      <dd set:html={md(f.v[locale])} />
+                    </div>
+                  ))}
+                </dl>
+              )}
+            </section>
+          )}
+          {d.gallery.length > 0 ? (
+            <section class="wrap p-gallery" aria-label={locale === 'es' ? 'Galería' : 'Gallery'}>
+              {d.gallery.map((g) => (
+                <figure class:list={['p-item', { wide: g.wide }]} data-fade>
+                  <Zoomable src={g.src} alt={g.alt[locale]} caption={g.caption?.[locale]} sizes={g.wide ? '100vw' : '(min-width: 900px) 50vw, 100vw'} widths={[640, 1000, 1600, 2200]} zoomLabel={locale === 'es' ? 'Ampliar' : 'Zoom'} />
+                  {g.caption && <figcaption>{g.caption[locale]}</figcaption>}
+                </figure>
+              ))}
+            </section>
+          ) : (
+            !d.intro && (
+              <div class="wrap p-soon">
+                <p class="pending">{t(locale, 'project.soon')}</p>
+              </div>
+            )
+          )}
+        </>
+      )
+    }
+    <nav class="wrap p-nav" aria-label={t(locale, 'project.next')}>
+      <a href={routes.work[locale]} class="link-underline" data-transition="plain">← {t(locale, 'project.back')}</a>
+      <a
+        href={projectHref(locale, next.slug)}
+        class="p-next"
+        data-transition={next.world.transition}
+        data-wipe={next.world.wipe}
+        data-cursor-label={locale === 'es' ? 'Ir' : 'Go'}
+      >
+        <span class="eyebrow">{t(locale, 'project.next')}</span>
+        <span class="display p-next-title">{next.title}</span>
+      </a>
+    </nav>
+  </article>
+  <Lightbox closeLabel={locale === 'es' ? 'Cerrar' : 'Close'} zoomLabel={locale === 'es' ? 'Imagen ampliada' : 'Enlarged image'} />
+</Base>
+
+<script>
+  import { onPage, gsap, reducedMotion } from '../scripts/motion';
+  onPage(() => {
+    if (reducedMotion()) return;
+    document.querySelectorAll<HTMLElement>('.p-gallery [data-fade]').forEach((el) =>
+      gsap.from(el, { y: 60, autoAlpha: 0, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%' } }),
+    );
+  });
+</script>
+
+<style>
+  .project {
+    padding-top: calc(var(--header-h) + clamp(2rem, 8vw, 6rem));
+  }
+  .project.has-case {
+    padding-top: 0;
+  }
+  .p-head {
+    display: grid;
+    gap: 1rem;
+    padding-bottom: clamp(2rem, 6vw, 4rem);
+  }
+  .p-kicker {
+    color: var(--fg-soft);
+  }
+  .p-title {
+    font-size: clamp(4rem, 2rem + 14vw, 18rem);
+    line-height: 0.82;
+  }
+  .p-teaser {
+    max-width: 40ch;
+    font-size: var(--step-1);
+  }
+  .p-disclaimer {
+    justify-self: start;
+    font-size: var(--step--1);
+    padding: 0.4rem 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+  }
+  .p-cover {
+    margin: 0;
+    height: min(90vh, 62rem);
+    overflow: hidden;
+  }
+  .p-cover :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .p-soon {
+    padding-block: 4rem;
+  }
+  .p-intro {
+    display: grid;
+    gap: 2rem;
+    padding-block: clamp(3rem, 8vw, 6rem);
+  }
+  .p-intro-text {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: 1.22;
+    max-width: 38ch;
+  }
+  .p-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 1rem 2rem;
+    border-top: 1px solid var(--line);
+    padding-top: 1.5rem;
+    font-size: var(--step--1);
+  }
+  .p-facts dt {
+    color: var(--fg-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.72rem;
+  }
+  .p-gallery {
+    display: grid;
+    gap: clamp(1rem, 3vw, 2rem);
+    padding-bottom: clamp(3rem, 8vw, 6rem);
+  }
+  .p-item {
+    margin: 0;
+  }
+  .p-item figcaption {
+    margin-top: 0.6rem;
+    font-size: var(--step--1);
+    color: var(--fg-soft);
+  }
+  @media (min-width: 900px) {
+    .p-gallery {
+      grid-template-columns: 1fr 1fr;
+    }
+    .p-item.wide {
+      grid-column: 1 / -1;
+    }
+  }
+  .p-nav {
+    border-top: 1px solid var(--line);
+    padding-top: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: 2rem;
+    padding-bottom: 5rem;
+  }
+  .p-next {
+    display: grid;
+    justify-items: end;
+    gap: 0.4rem;
+    text-align: right;
+  }
+  .p-next-title {
+    font-size: var(--step-4);
+  }
+</style>

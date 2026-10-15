@@ -1,0 +1,304 @@
+---
+/**
+ * Hoja de anatomía interactiva: puntos sobre la lámina con las notas de Vega.
+ * Escritorio: hover/foco abre la nota junto al punto. Táctil: tap abre/cierra
+ * y la nota aparece bajo la lámina. Las notas también se listan para lectores
+ * de pantalla y como versión sin JavaScript.
+ */
+import Image from '../../components/Img.astro';
+import type { Locale } from '../../i18n/ui';
+import { md } from '../../lib/md';
+import sheet from '../../assets/projects/goab/anatomy-sheet.png';
+import text from '../../content/projects/goab/case.json';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const a = text.anatomy;
+const alt =
+  locale === 'es'
+    ? 'Hoja de anatomía de Goab: estudio muscular de la criatura, cráneo humano, pie de huesos, retrato y figura de Bastian, bocetos del rostro, remolinos de arena y una pose a cuatro patas.'
+    : "Goab anatomy sheet: muscle study of the creature, a human skull, a bone foot, Bastian's portrait and full figure, face sketches, sand swirls and a crawling pose.";
+---
+
+<section class="anatomy wrap" data-anatomy data-warm aria-labelledby="anatomy-title">
+  <div class="an-head">
+    <p class="eyebrow an-label">{a.label[locale]}</p>
+    <h2 id="anatomy-title" class="display an-title">{a.title[locale]}</h2>
+    <p class="an-hint">{a.hint[locale]}</p>
+  </div>
+
+  <figure class="an-figure">
+    <div class="an-sheet">
+      <Image src={sheet} alt={alt} widths={[640, 1000, 1500, 1927]} sizes="(min-width: 1200px) 1100px, 100vw" />
+      {
+        a.spots.map((s, i) => (
+          <button
+            type="button"
+            class="an-spot"
+            style={`left:${s.x * 100}%;top:${s.y * 100}%`}
+            data-spot={s.id}
+            data-side={s.x > 0.6 ? 'left' : 'right'}
+            aria-expanded="false"
+            aria-controls="an-note"
+          >
+            <span class="an-dot" aria-hidden="true">{i + 1}</span>
+            <span class="sr-only">{s.k[locale]}</span>
+          </button>
+        ))
+      }
+      <div id="an-note" class="an-note" role="status" aria-live="polite" hidden>
+        <p class="an-note-k"></p>
+        <p class="an-note-t"></p>
+      </div>
+    </div>
+  </figure>
+
+  <ol class="an-list">
+    {
+      a.spots.map((s, i) => (
+        <li data-note={s.id}>
+          <span class="an-list-n">{i + 1}</span>
+          <strong>{s.k[locale]}</strong>
+          <span set:html={md(s.text[locale])} />
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<script>
+  import { onPage, gsap, reducedMotion } from '../../scripts/motion';
+
+  onPage(() => {
+    const root = document.querySelector<HTMLElement>('[data-anatomy]');
+    if (!root) return;
+    root.classList.add('is-interactive');
+    // Los puntos solo aparecen cuando la lámina ya está cargada (nunca flotando en vacío)
+    const sheetImg = root.querySelector<HTMLImageElement>('.an-sheet img')!;
+    const ready = () => root.classList.add('is-ready');
+    if (sheetImg.complete && sheetImg.naturalWidth) ready();
+    else sheetImg.addEventListener('load', ready, { once: true });
+    const spots = Array.from(root.querySelectorAll<HTMLButtonElement>('.an-spot'));
+    const note = root.querySelector<HTMLElement>('.an-note')!;
+    const k = note.querySelector<HTMLElement>('.an-note-k')!;
+    const t = note.querySelector<HTMLElement>('.an-note-t')!;
+    const hover = window.matchMedia('(hover: hover)').matches;
+    let active: HTMLButtonElement | null = null;
+
+    const open = (btn: HTMLButtonElement) => {
+      const item = root.querySelector<HTMLElement>(`[data-note="${btn.dataset.spot}"]`)!;
+      k.textContent = item.querySelector('strong')!.textContent;
+      t.innerHTML = item.querySelector('span:last-child')!.innerHTML;
+      spots.forEach((s) => s.setAttribute('aria-expanded', String(s === btn)));
+      note.hidden = false;
+      note.dataset.side = btn.dataset.side;
+      note.style.setProperty('--x', btn.style.left);
+      note.style.setProperty('--y', btn.style.top);
+      active = btn;
+      if (!reducedMotion()) gsap.fromTo(note, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.35, ease: 'power3.out' });
+    };
+    const close = () => {
+      spots.forEach((s) => s.setAttribute('aria-expanded', 'false'));
+      note.hidden = true;
+      active = null;
+    };
+
+    spots.forEach((btn) => {
+      btn.addEventListener('click', () => (active === btn ? close() : open(btn)));
+      if (hover) {
+        btn.addEventListener('pointerenter', () => open(btn));
+      }
+    });
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && close();
+    const onDoc = (e: PointerEvent) => {
+      if (!(e.target as Element).closest('.an-spot, .an-note')) close();
+    };
+    root.addEventListener('keydown', onKey);
+    document.addEventListener('pointerdown', onDoc);
+
+    if (!reducedMotion()) {
+      gsap.from(spots, {
+        scale: 0,
+        duration: 0.6,
+        ease: 'back.out(2)',
+        stagger: 0.08,
+        scrollTrigger: { trigger: root.querySelector('.an-sheet'), start: 'top 70%' },
+      });
+    }
+    return () => document.removeEventListener('pointerdown', onDoc);
+  });
+</script>
+
+<style>
+  .anatomy {
+    padding-block: clamp(4rem, 10vw, 8rem);
+  }
+  .an-head {
+    display: grid;
+    gap: 0.8rem;
+    margin-bottom: clamp(1.5rem, 4vw, 3rem);
+  }
+  .an-label {
+    color: var(--accent);
+  }
+  .an-title {
+    font-size: var(--step-4);
+  }
+  .an-hint {
+    color: var(--fg-soft);
+    font-size: var(--step--1);
+  }
+  .an-figure {
+    margin: 0;
+  }
+  .an-sheet {
+    position: relative;
+    background: #ddd3c3;
+    aspect-ratio: 1927 / 1445;
+    max-width: 1100px;
+    margin-inline: auto;
+    border-radius: 2px;
+    box-shadow: 0 40px 80px -40px rgb(0 0 0 / 0.7);
+  }
+  .an-sheet :global(img) {
+    display: block;
+    width: 100%;
+  }
+  .an-spot {
+    display: none;
+    position: absolute;
+    translate: -50% -50%;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .is-interactive .an-spot {
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+  }
+  .is-interactive.is-ready .an-spot {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .an-dot {
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: #251c1a;
+    color: #f8eaae;
+    font-size: 0.75rem;
+    font-weight: 600;
+    box-shadow:
+      0 0 0 2px #cfaa72,
+      0 0 0 0 rgb(207 170 114 / 0.6);
+    animation: pulse 2.4s infinite;
+    transition: scale 0.3s var(--ease-out-expo);
+  }
+  .an-spot:hover .an-dot,
+  .an-spot[aria-expanded='true'] .an-dot {
+    scale: 1.2;
+    background: #cfaa72;
+    color: #251c1a;
+    animation: none;
+  }
+  @keyframes pulse {
+    70% {
+      box-shadow:
+        0 0 0 2px #cfaa72,
+        0 0 0 12px rgb(207 170 114 / 0);
+    }
+    100% {
+      box-shadow:
+        0 0 0 2px #cfaa72,
+        0 0 0 0 rgb(207 170 114 / 0);
+    }
+  }
+
+  .an-note {
+    position: relative;
+    margin-top: 1rem;
+    padding: 1rem 1.2rem;
+    background: #251c1a;
+    color: #f8eaae;
+    border-left: 2px solid #cfaa72;
+    max-width: 34rem;
+    z-index: 3;
+  }
+  .an-note-k {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    margin-bottom: 0.2rem;
+  }
+  .an-note-t {
+    font-size: var(--step-0);
+    line-height: 1.5;
+  }
+
+  .an-list {
+    list-style: none;
+    padding: 0;
+    margin: 2rem auto 0;
+    max-width: 1100px;
+    display: grid;
+    gap: 0.8rem 2rem;
+    font-size: var(--step--1);
+    color: var(--fg-soft);
+  }
+  .an-list li {
+    display: grid;
+    grid-template-columns: 1.6rem 1fr;
+    column-gap: 0.4rem;
+  }
+  .an-list strong {
+    color: var(--fg);
+    font-weight: 600;
+  }
+  .an-list span:last-child {
+    grid-column: 2;
+  }
+  .an-list-n {
+    color: var(--accent);
+    grid-row: span 2;
+  }
+  /* Con JS las notas se leen desde los puntos: la lista queda solo para lectores de pantalla */
+  .is-interactive .an-list {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  @media (min-width: 768px) and (hover: hover) {
+    .an-note {
+      position: absolute;
+      margin: 0;
+      top: var(--y);
+      width: min(22rem, 40%);
+      translate: 0 -50%;
+      box-shadow: 0 20px 40px -20px rgb(0 0 0 / 0.6);
+    }
+    .an-note[data-side='right'] {
+      left: calc(var(--x) + 2.2rem);
+    }
+    .an-note[data-side='left'] {
+      right: calc(100% - var(--x) + 2.2rem);
+    }
+  }
+  @media (min-width: 900px) {
+    .an-list {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

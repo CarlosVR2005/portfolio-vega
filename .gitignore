@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.astro/
+.vercel/
+
+# Material de trabajo (no se publica)
+source/
+shots/
+*.pdf
+.claude/
+__pycache__/
+
+.DS_Store
+Thumbs.db

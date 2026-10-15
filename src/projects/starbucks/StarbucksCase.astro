@@ -1,0 +1,778 @@
+---
+/**
+ * Caso Starbucks — mundo de atardecer cinematográfico.
+ * Fondo crepuscular que cambia de paleta con cada escena, bombillas que
+ * parpadean, fuegos artificiales en el 4 de julio y mockups en carrusel.
+ * Siempre visible: aviso de proyecto académico sin vinculación con la marca.
+ */
+import { getImage } from 'astro:assets';
+import Image from '../../components/Img.astro';
+import type { ImageMetadata } from 'astro';
+import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '../../i18n/ui';
+import { md } from '../../lib/md';
+import text from '../../content/projects/starbucks/case.json';
+
+interface Props {
+  locale: Locale;
+  project: CollectionEntry<'projects'>;
+}
+const { locale, project } = Astro.props;
+const d = project.data;
+const es = locale === 'es';
+
+const all = import.meta.glob<{ default: ImageMetadata }>('../../assets/projects/starbucks/*.png', { eager: true });
+const img = (name: string) => all[`../../assets/projects/starbucks/${name}.png`].default;
+const scenes = await Promise.all(
+  text.scenes.map(async (s) => ({ ...s, src: img(s.img), big: await getImage({ src: img(s.img), width: 1456, format: 'webp' }) })),
+);
+// Focos del estadio (US Open), localizados en la imagen con muestreo de brillo
+const lamps = [
+  { x: 0.265, y: 0.327 },
+  { x: 0.807, y: 0.321 },
+];
+const bulbs = Array.from({ length: 15 }, (_, i) => i);
+---
+
+<!-- ============ Portada ============ -->
+<section class="hero" data-sb-hero aria-labelledby="sb-title">
+  <div class="garland" aria-hidden="true">
+    <svg class="wire" viewBox="0 0 1000 120" preserveAspectRatio="none"><path d="M-10 20 Q 250 110 500 60 T 1010 30" /></svg>
+    {bulbs.map((i) => <span class="bulb" style={`--i:${i};--t:${i / (bulbs.length - 1)}`} />)}
+  </div>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow hero-kicker">{d.kicker[locale]} · {d.year}</p>
+      <h1 id="sb-title" class="display hero-title">{d.title}</h1>
+      <p class="hero-teaser">{d.teaser[locale]}</p>
+      <p class="disclaimer-chip" role="note">
+        <span aria-hidden="true">✦</span>
+        {d.disclaimer?.[locale]}
+      </p>
+    </div>
+    <div class="fan" aria-hidden="true">
+      {
+        scenes.map((s, i) => (
+          <div class="fan-card" style={`--k:${i - 1};--ay:${Math.abs(i - 1)}`}>
+            <Image src={s.src} alt="" widths={[300, 520]} sizes="(min-width: 1024px) 18vw, 32vw" loading="eager" fetchpriority={i === 0 ? 'high' : 'auto'} />
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ============ Intro ============ -->
+<section class="wrap intro">
+  <p class="eyebrow i-label">{text.intro.label[locale]}</p>
+  <div class="intro-cols">
+    {text.intro.text.map((t, i) => <p class:list={['i-p', { lead: i === 0 }]} set:html={md(t[locale])} />)}
+  </div>
+  <dl class="facts">
+    {
+      text.intro.facts.map((f) => (
+        <div>
+          <dt>{f.k[locale]}</dt>
+          <dd>{f.v[locale]}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>
+
+<!-- ============ Escenas ============ -->
+<section class="scenes" data-scenes>
+  <div class="scenes-bg-wrap" aria-hidden="true"><div class="scenes-bg"></div></div>
+  {
+    scenes.map((s) => (
+      <article class="scene" data-scene={s.id} data-bg={s.bg.join(',')} aria-labelledby={`sc-${s.id}`}>
+        <div class="wrap scene-grid">
+          <div class="poster-wrap" data-tilt-poster>
+            <div class="poster">
+              <Image src={s.src} alt={s.alt[locale]} widths={[400, 700, 936]} sizes="(min-width: 1024px) 34vw, 86vw" />
+              {s.id === 'july' && <canvas class="fireworks" aria-hidden="true" />}
+              {s.id === 'usopen' && lamps.map((l) => <span class="lamp" aria-hidden="true" style={`left:${l.x * 100}%;top:${l.y * 100}%`} />)}
+            </div>
+          </div>
+          <div class="scene-copy">
+            <p class="scene-n">{s.n}</p>
+            <h2 id={`sc-${s.id}`} class="display scene-title">
+              {s.title[locale]}
+            </h2>
+            <p class="scene-text">{s.text[locale]}</p>
+            <ul class="scene-pal" role="list" aria-label={es ? 'Paleta' : 'Palette'}>
+              {s.palette.map((c) => (
+                <li style={`--c:${c}`} title={c}>
+                  <span class="sr-only">{c}</span>
+                </li>
+              ))}
+            </ul>
+            <div class="scene-actions">
+              <a href={s.big.src} class="pill" data-lightbox data-astro-reload data-alt={s.alt[locale]} data-caption={`${d.title} — ${s.title[locale]}`}>
+                {es ? 'Ver a pantalla completa' : 'View full screen'} <span aria-hidden="true">↗</span>
+              </a>
+              {s.hint && (
+                <button type="button" class="pill pill-ghost" data-fire>
+                  {s.hint[locale]} <span aria-hidden="true">✺</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+        {s.id === 'christmas' && (
+          <div class="garland garland-scene" aria-hidden="true">
+            <svg class="wire" viewBox="0 0 1000 120" preserveAspectRatio="none">
+              <path d="M-10 40 Q 300 120 600 50 T 1010 60" />
+            </svg>
+            {bulbs.map((i) => <span class="bulb" style={`--i:${i};--t:${i / (bulbs.length - 1)}`} />)}
+          </div>
+        )}
+      </article>
+    ))
+  }
+</section>
+
+<!-- ============ Mockups ============ -->
+<section class="mockups" data-carousel aria-labelledby="mk-title" aria-roledescription={es ? 'carrusel' : 'carousel'}>
+  <div class="wrap mk-head">
+    <div>
+      <p class="eyebrow i-label">{text.mockups.label[locale]}</p>
+      <h2 id="mk-title" class="display mk-title">{text.mockups.title[locale]}</h2>
+    </div>
+    <div class="mk-nav">
+      <button type="button" class="mk-btn" data-dir="-1" aria-label={text.mockups.prev[locale]}>←</button>
+      <button type="button" class="mk-btn" data-dir="1" aria-label={text.mockups.next[locale]}>→</button>
+    </div>
+  </div>
+  <ul class="mk-track" role="list" tabindex="0" aria-label={text.mockups.title[locale]}>
+    {
+      text.mockups.items.map((m, i) => (
+        <li class="mk-slide" aria-label={`${i + 1} / ${text.mockups.items.length}`}>
+          <figure class="mk-fig" data-tilt-mk>
+            <Image src={img(m.img)} alt={m.alt[locale]} widths={[640, 1100, 1600]} sizes="(min-width: 1024px) 70vw, 88vw" />
+            <figcaption>{m.k[locale]}</figcaption>
+          </figure>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<section class="wrap legal" aria-label={es ? 'Aviso' : 'Notice'}>
+  <p>{text.disclaimer[locale]}</p>
+</section>
+
+<script>
+  import { onPage, gsap, reducedMotion, finePointer } from '../../scripts/motion';
+
+  /** Fuegos artificiales ligeros en canvas 2D. */
+  function fireworks(canvas: HTMLCanvasElement) {
+    const ctx = canvas.getContext('2d')!;
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const colors = ['#fff4dc', '#ffd08a', '#ff9fb2', '#c9b8ff', '#9fd4ff'];
+    type P = { x: number; y: number; vx: number; vy: number; life: number; c: string };
+    let parts: P[] = [];
+    let raf = 0;
+    const size = () => {
+      const r = canvas.getBoundingClientRect();
+      canvas.width = r.width * dpr;
+      canvas.height = r.height * dpr;
+    };
+    size();
+    const tick = () => {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = 'rgba(0,0,0,0.28)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.globalCompositeOperation = 'lighter';
+      parts = parts.filter((p) => p.life > 0);
+      for (const p of parts) {
+        p.vy += 0.035 * dpr;
+        p.vx *= 0.985;
+        p.vy *= 0.985;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.012;
+        ctx.globalAlpha = Math.max(p.life, 0);
+        ctx.fillStyle = p.c;
+        ctx.fillRect(p.x, p.y, 2 * dpr, 2 * dpr);
+      }
+      ctx.globalAlpha = 1;
+      raf = parts.length ? requestAnimationFrame(tick) : 0;
+      if (!raf) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    };
+    return {
+      burst(fx: number, fy: number) {
+        const x = fx * canvas.width;
+        const y = fy * canvas.height;
+        const c = colors[Math.floor(Math.random() * colors.length)];
+        const n = 70;
+        for (let i = 0; i < n; i++) {
+          const a = (i / n) * Math.PI * 2;
+          const sp = (1.6 + Math.random() * 1.8) * dpr;
+          parts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0.8 + Math.random() * 0.4, c });
+        }
+        if (!raf) raf = requestAnimationFrame(tick);
+      },
+      size,
+      stop: () => cancelAnimationFrame(raf),
+    };
+  }
+
+  onPage(() => {
+    const scenesEl = document.querySelector<HTMLElement>('[data-scenes]');
+    if (!scenesEl) return;
+    const reduce = reducedMotion();
+    const cleanups: (() => void)[] = [];
+
+    // --- Portada: el abanico de carteles se abre ------------------------
+    if (!reduce) {
+      gsap.from('.fan-card', { y: 120, rotate: 0, autoAlpha: 0, duration: 1.3, ease: 'expo.out', stagger: 0.12, delay: 0.2 });
+      gsap.to('.fan', {
+        yPercent: -12,
+        ease: 'none',
+        scrollTrigger: { trigger: '[data-sb-hero]', start: 'top top', end: 'bottom top', scrub: true },
+      });
+    }
+
+    // --- Fondo crepuscular que cambia con cada escena -------------------
+    const bg = scenesEl.querySelector<HTMLElement>('.scenes-bg')!;
+    const scenes = gsap.utils.toArray<HTMLElement>('.scene', scenesEl);
+    const setBg = (el: HTMLElement, instant = false) => {
+      const [c1, c2, c3] = el.dataset.bg!.split(',');
+      gsap.to(bg, { '--c1': c1, '--c2': c2, '--c3': c3, duration: instant || reduce ? 0 : 1.2, ease: 'power2.inOut' });
+    };
+    setBg(scenes[0], true);
+    scenes.forEach((s) => {
+      gsap.timeline({
+        scrollTrigger: { trigger: s, start: 'top 55%', end: 'bottom 45%', onEnter: () => setBg(s), onEnterBack: () => setBg(s) },
+      });
+      if (!reduce) {
+        gsap.from(s.querySelector('.poster-wrap'), {
+          y: 90,
+          rotate: -3,
+          autoAlpha: 0,
+          duration: 1.2,
+          ease: 'expo.out',
+          scrollTrigger: { trigger: s, start: 'top 75%' },
+        });
+        gsap.from(s.querySelectorAll('.scene-copy > *'), {
+          y: 30,
+          autoAlpha: 0,
+          duration: 0.9,
+          ease: 'power3.out',
+          stagger: 0.07,
+          scrollTrigger: { trigger: s, start: 'top 65%' },
+        });
+      }
+    });
+
+    // --- Fuegos artificiales (4 de julio) -------------------------------
+    const canvas = scenesEl.querySelector<HTMLCanvasElement>('.fireworks');
+    if (canvas && !reduce) {
+      const fw = fireworks(canvas);
+      const poster = canvas.parentElement!;
+      const show = () => {
+        [
+          [0.3, 0.22],
+          [0.68, 0.16],
+          [0.5, 0.3],
+        ].forEach(([x, y], i) => gsap.delayedCall(i * 0.35, () => fw.burst(x, y)));
+      };
+      gsap.timeline({ scrollTrigger: { trigger: poster, start: 'top 60%', onEnter: show, onEnterBack: show } });
+      poster.addEventListener('click', (e) => {
+        const r = poster.getBoundingClientRect();
+        fw.burst((e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height);
+      });
+      scenesEl.querySelector('[data-fire]')?.addEventListener('click', show);
+      const ro = new ResizeObserver(() => fw.size());
+      ro.observe(canvas);
+      cleanups.push(() => (fw.stop(), ro.disconnect()));
+    }
+
+    // --- Tilt de carteles y mockups (solo ratón) ------------------------
+    if (finePointer() && !reduce) {
+      document.querySelectorAll<HTMLElement>('[data-tilt-poster], [data-tilt-mk]').forEach((wrap) => {
+        const target = (wrap.querySelector('.poster') as HTMLElement) ?? wrap;
+        const rx = gsap.quickTo(target, 'rotationX', { duration: 0.7, ease: 'power3' });
+        const ry = gsap.quickTo(target, 'rotationY', { duration: 0.7, ease: 'power3' });
+        const strength = wrap.hasAttribute('data-tilt-mk') ? 6 : 14;
+        const move = (e: PointerEvent) => {
+          const r = wrap.getBoundingClientRect();
+          ry(((e.clientX - r.left) / r.width - 0.5) * strength);
+          rx(-((e.clientY - r.top) / r.height - 0.5) * strength);
+        };
+        const leave = () => (rx(0), ry(0));
+        wrap.addEventListener('pointermove', move);
+        wrap.addEventListener('pointerleave', leave);
+      });
+    }
+
+    // --- Carrusel de mockups (scroll-snap + botones) ---------------------
+    const car = document.querySelector<HTMLElement>('[data-carousel]')!;
+    const track = car.querySelector<HTMLElement>('.mk-track')!;
+    const slides = Array.from(track.querySelectorAll<HTMLElement>('.mk-slide'));
+    const btns = Array.from(car.querySelectorAll<HTMLButtonElement>('.mk-btn'));
+    let current = 0;
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          e.target.classList.toggle('is-active', e.intersectionRatio > 0.6);
+          if (e.intersectionRatio > 0.6) current = slides.indexOf(e.target as HTMLElement);
+          btns[0].disabled = current === 0;
+          btns[1].disabled = current === slides.length - 1;
+        }),
+      { root: track, threshold: [0, 0.6, 1] },
+    );
+    slides.forEach((s) => io.observe(s));
+    const go = (i: number) => {
+      const s = slides[Math.max(0, Math.min(slides.length - 1, i))];
+      track.scrollTo({ left: s.offsetLeft - track.offsetLeft - (track.clientWidth - s.clientWidth) / 2, behavior: reduce ? 'auto' : 'smooth' });
+    };
+    btns.forEach((b) => b.addEventListener('click', () => go(current + Number(b.dataset.dir))));
+    track.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') (e.preventDefault(), go(current + 1));
+      if (e.key === 'ArrowLeft') (e.preventDefault(), go(current - 1));
+    });
+    cleanups.push(() => io.disconnect());
+
+    return () => cleanups.forEach((c) => c());
+  });
+</script>
+
+<style>
+  .i-label {
+    color: var(--fg-soft);
+  }
+
+  /* ---- Guirnalda de bombillas ---- */
+  .garland {
+    position: absolute;
+    inset: 0 0 auto;
+    height: clamp(5rem, 12vw, 9rem);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .wire {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .wire path {
+    fill: none;
+    stroke: rgb(20 16 30 / 0.7);
+    stroke-width: 1.4;
+    vector-effect: non-scaling-stroke;
+  }
+  .bulb {
+    position: absolute;
+    left: calc(var(--t) * 100%);
+    /* aproximación de la curva del cable */
+    top: calc((0.17 + 0.55 * sin(var(--t) * 3.1416) - 0.25 * var(--t)) * 100%);
+    width: 9px;
+    height: 12px;
+    margin-left: -4.5px;
+    border-radius: 45% 45% 50% 50%;
+    background: #fff1cf;
+    box-shadow:
+      0 0 8px 3px rgb(255 214 140 / 0.85),
+      0 0 26px 10px rgb(255 170 90 / 0.35);
+    animation: flicker 3.2s ease-in-out infinite;
+    animation-delay: calc(var(--i) * -0.37s);
+  }
+  @keyframes flicker {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    42% {
+      opacity: 0.86;
+    }
+    48% {
+      opacity: 0.55;
+    }
+    52% {
+      opacity: 0.95;
+    }
+    70% {
+      opacity: 0.8;
+    }
+  }
+
+  /* ---- Portada ---- */
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    overflow: hidden;
+    background: linear-gradient(180deg, #1f1b2e 0%, #2a3257 28%, #6b5270 55%, #aaa5be 72%, #c9977a 88%, #d1713b 100%);
+  }
+  .hero-grid {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    /* el abanico queda anclado abajo: si la fuente cambia la altura del texto, no se mueve */
+    min-height: 100svh;
+    grid-template-rows: auto 1fr;
+    gap: 2.5rem;
+    padding-block: calc(var(--header-h) + 4rem) 3rem;
+  }
+  .hero-copy {
+    display: grid;
+    gap: 1rem;
+    align-content: center;
+  }
+  .hero-kicker {
+    color: #e3d7f0;
+  }
+  .hero-title {
+    font-size: clamp(4rem, 1rem + 13vw, 13rem);
+    line-height: 0.82;
+    letter-spacing: -0.03em;
+    color: #fff6ec;
+    text-shadow: 0 10px 50px rgb(31 27 46 / 0.4);
+  }
+  .hero-teaser {
+    max-width: 38ch;
+    font-size: var(--step-1);
+  }
+  .disclaimer-chip {
+    justify-self: start;
+    display: inline-flex;
+    gap: 0.6rem;
+    align-items: center;
+    padding: 0.55rem 0.9rem;
+    border-radius: 999px;
+    background: rgb(31 27 46 / 0.55);
+    border: 1px solid rgb(246 235 225 / 0.35);
+    font-size: var(--step--1);
+    backdrop-filter: blur(6px);
+  }
+  .fan {
+    position: relative;
+    align-self: end;
+    height: min(92vw, 34rem);
+  }
+  .fan-card {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 46%;
+    aspect-ratio: 3 / 4;
+    translate: calc(-50% + var(--k) * 62%) calc(var(--ay) * 6%);
+    rotate: calc(var(--k) * 9deg);
+    transform-origin: 50% 120%;
+    box-shadow: 0 30px 60px -25px rgb(20 16 30 / 0.8);
+  }
+  .fan-card:nth-child(2) {
+    z-index: 2;
+  }
+  .fan-card :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  @media (min-width: 1024px) {
+    .hero-grid {
+      grid-template-columns: 1.1fr 1fr;
+      grid-template-rows: none;
+      align-items: center;
+      min-height: 0;
+    }
+    .fan {
+      align-self: center;
+    }
+    .fan {
+      height: 36rem;
+    }
+    .fan-card {
+      width: 42%;
+    }
+  }
+
+  /* ---- Intro ---- */
+  .intro {
+    display: grid;
+    gap: 1.5rem;
+    padding-block: clamp(5rem, 12vw, 9rem) clamp(3rem, 8vw, 6rem);
+  }
+  .intro-cols {
+    display: grid;
+    gap: 1.5rem;
+  }
+  .i-p {
+    max-width: 54ch;
+  }
+  .i-p.lead {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: 1.22;
+    max-width: 34ch;
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 1rem 2rem;
+    border-top: 1px solid var(--line);
+    padding-top: 1.5rem;
+    font-size: var(--step--1);
+  }
+  .facts dt {
+    color: var(--fg-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.72rem;
+  }
+  @media (min-width: 1024px) {
+    .intro-cols {
+      grid-template-columns: 1.2fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+  }
+
+  /* ---- Escenas ---- */
+  .scenes {
+    position: relative;
+  }
+  /* El fondo se fija dentro de un contenedor absoluto: no puede salirse de la sección */
+  .scenes-bg-wrap {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .scenes-bg {
+    --c1: #1f1b2e;
+    --c2: #2a3257;
+    --c3: #6b5270;
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    background:
+      radial-gradient(80% 60% at 50% 110%, color-mix(in oklab, var(--c3) 90%, #ffb070 10%), transparent 70%),
+      linear-gradient(180deg, var(--c1) 0%, var(--c2) 55%, var(--c3) 100%);
+  }
+  .scene {
+    position: relative;
+    overflow-x: clip;
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    padding-block: clamp(4rem, 10vw, 7rem);
+  }
+  .scene-grid {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+  }
+  .poster-wrap {
+    perspective: 1000px;
+    justify-self: center;
+    width: min(86vw, 30rem);
+  }
+  .poster {
+    position: relative;
+    transform-style: preserve-3d;
+    box-shadow: 0 40px 80px -30px rgb(10 8 20 / 0.85);
+  }
+  .poster :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .fireworks {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+  }
+  .lamp {
+    position: absolute;
+    width: 22%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(255 236 180 / 0.75), rgb(255 200 120 / 0.25) 35%, transparent 70%);
+    mix-blend-mode: screen;
+    animation: lamp 4s ease-in-out infinite;
+  }
+  .lamp + .lamp {
+    animation-delay: -1.7s;
+  }
+  @keyframes lamp {
+    50% {
+      opacity: 0.55;
+      scale: 0.9;
+    }
+  }
+  .scene-copy {
+    text-shadow: 0 1px 18px rgb(20 16 30 / 0.55);
+    display: grid;
+    gap: 0.9rem;
+    max-width: 30rem;
+  }
+  .scene-n {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    color: #ffc58f;
+  }
+  .scene-title {
+    font-size: var(--step-4);
+    color: #fff6ec;
+  }
+  .scene-pal {
+    list-style: none;
+    margin: 0.4rem 0;
+    padding: 0;
+    display: flex;
+    gap: 0.4rem;
+  }
+  .scene-pal li {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--c);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.25);
+  }
+  .scene-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .pill {
+    display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.7rem 1.1rem;
+    border-radius: 999px;
+    background: #f6ebe1;
+    color: #1f1b2e;
+    font-size: var(--step--1);
+    font-weight: 600;
+    border: 1px solid #f6ebe1;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .pill-ghost {
+    background: transparent;
+    color: #f6ebe1;
+  }
+  .garland-scene {
+    top: 0;
+  }
+  @media (min-width: 1024px) {
+    .scene-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+    }
+    .scene:nth-child(odd of .scene) .poster-wrap {
+      order: 2;
+    }
+    .poster-wrap {
+      width: min(36vw, 72svh * 0.75);
+    }
+  }
+
+  /* ---- Mockups ---- */
+  .mockups {
+    padding-block: clamp(4rem, 10vw, 8rem);
+    background: linear-gradient(180deg, #253a53, #1f1b2e);
+  }
+  .mk-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .mk-title {
+    font-size: var(--step-3);
+  }
+  .mk-nav {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .mk-btn {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    border: 1px solid rgb(246 235 225 / 0.4);
+    background: transparent;
+    color: inherit;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s, opacity 0.3s;
+  }
+  .mk-btn:hover:not(:disabled) {
+    background: #f6ebe1;
+    color: #1f1b2e;
+  }
+  .mk-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  .mk-track {
+    list-style: none;
+    margin: 0;
+    padding: 0 var(--gutter) 1rem;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(88vw, 70rem);
+    gap: clamp(1rem, 3vw, 2.5rem);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .mk-track::-webkit-scrollbar {
+    display: none;
+  }
+  .mk-slide {
+    scroll-snap-align: center;
+    perspective: 1400px;
+  }
+  .mk-fig {
+    margin: 0;
+    opacity: 0.45;
+    scale: 0.94;
+    transition:
+      opacity 0.7s var(--ease-out-expo),
+      scale 0.9s var(--ease-out-expo);
+  }
+  .mk-slide.is-active .mk-fig {
+    opacity: 1;
+    scale: 1;
+  }
+  .mk-fig :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 2px;
+  }
+  .mk-fig figcaption {
+    margin-top: 0.8rem;
+    font-size: var(--step--1);
+    color: var(--fg-soft);
+  }
+
+  .legal {
+    padding-block: 3rem;
+    font-size: var(--step--1);
+    color: var(--fg-soft);
+    max-width: 70ch;
+    margin-inline: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bulb,
+    .lamp {
+      animation: none;
+    }
+  }
+</style>

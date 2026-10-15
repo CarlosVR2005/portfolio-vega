@@ -1,0 +1,317 @@
+---
+import Base from '../layouts/Base.astro';
+import Field from '../components/Field.astro';
+import site from '../content/site.json';
+import { routes, isPending, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const es = locale === 'es';
+const formReady = !isPending(site.formEndpoint);
+const L = es
+  ? {
+      title: 'Contacto',
+      lead: 'Si tienes un proyecto, una vacante o una idea, escríbeme.',
+      email: 'Email',
+      social: 'Redes',
+      cv: 'Currículum',
+      cvLink: 'Descargar CV (PDF)',
+      form: 'O déjame un mensaje',
+      name: 'Nombre',
+      mail: 'Tu email',
+      message: 'Mensaje',
+      send: 'Enviar',
+      sending: 'Enviando…',
+      ok: 'Gracias, mensaje enviado. Te responderé lo antes posible.',
+      err: 'No se ha podido enviar. Prueba otra vez o escríbeme por email.',
+      notReady: 'El formulario se activará cuando esté configurado el servicio de envío.',
+      required: 'Este campo es obligatorio.',
+      invalidMail: 'Revisa el email: parece que no es válido.',
+      short: 'Cuéntame un poco más (mínimo 10 caracteres).',
+      honeypot: 'No rellenes este campo',
+    }
+  : {
+      title: 'Contact',
+      lead: 'If you have a project, a position or an idea, get in touch.',
+      email: 'Email',
+      social: 'Social',
+      cv: 'Résumé',
+      cvLink: 'Download CV (PDF)',
+      form: 'Or leave me a message',
+      name: 'Name',
+      mail: 'Your email',
+      message: 'Message',
+      send: 'Send',
+      sending: 'Sending…',
+      ok: 'Thanks, your message is on its way. I’ll reply as soon as I can.',
+      err: 'It couldn’t be sent. Please try again or email me.',
+      notReady: 'The form will be enabled once the delivery service is set up.',
+      required: 'This field is required.',
+      invalidMail: 'Please check the email address.',
+      short: 'Tell me a bit more (at least 10 characters).',
+      honeypot: 'Leave this field empty',
+    };
+---
+
+<Base locale={locale} title={L.title} description={L.lead} alternates={{ es: routes.contact.es, en: routes.contact.en }}>
+  <article class="contact">
+    <header class="wrap c-head">
+      <h1 class="display c-title">{L.title}</h1>
+      <p class="c-lead">{L.lead}</p>
+      <Field value={site.availability[locale]} as="p" />
+    </header>
+
+    <div class="wrap c-grid">
+      <dl class="c-info">
+        <div>
+          <dt class="eyebrow">{L.email}</dt>
+          <dd>
+            {isPending(site.email) ? <Field value={site.email} /> : <a class="c-big link-underline" href={`mailto:${site.email}`}>{site.email}</a>}
+          </dd>
+        </div>
+        <div>
+          <dt class="eyebrow">{L.social}</dt>
+          <dd>
+            <ul class="c-social" role="list">
+              {
+                site.social.map((s) => (
+                  <li>
+                    {isPending(s.url) ? (
+                      <Field value={s.url} />
+                    ) : (
+                      <a class="link-underline" href={s.url} target="_blank" rel="me noopener">
+                        {s.label} <span aria-hidden="true">↗</span>
+                      </a>
+                    )}
+                  </li>
+                ))
+              }
+            </ul>
+          </dd>
+        </div>
+        <div>
+          <dt class="eyebrow">{L.cv}</dt>
+          <dd>
+            {isPending(site.cv) ? <Field value={site.cv} /> : <a class="c-cv" href={site.cv} download>{L.cvLink} <span aria-hidden="true">↓</span></a>}
+          </dd>
+        </div>
+      </dl>
+
+      <form class="c-form" data-contact-form action={formReady ? site.formEndpoint : undefined} method="post" novalidate>
+        <p class="eyebrow c-form-title">{L.form}</p>
+        {!formReady && <p class="pending c-notice">{L.notReady}</p>}
+        <div class="field">
+          <label for="cf-name">{L.name}</label>
+          <input id="cf-name" name="name" type="text" autocomplete="name" required maxlength="120" aria-describedby="cf-name-err" />
+          <p class="err" id="cf-name-err" data-msg={L.required}></p>
+        </div>
+        <div class="field">
+          <label for="cf-email">{L.mail}</label>
+          <input id="cf-email" name="email" type="email" autocomplete="email" required maxlength="200" aria-describedby="cf-email-err" />
+          <p class="err" id="cf-email-err" data-msg={L.required} data-msg-type={L.invalidMail}></p>
+        </div>
+        <div class="field">
+          <label for="cf-msg">{L.message}</label>
+          <textarea id="cf-msg" name="message" rows="6" required minlength="10" maxlength="4000" aria-describedby="cf-msg-err"></textarea>
+          <p class="err" id="cf-msg-err" data-msg={L.required} data-msg-short={L.short}></p>
+        </div>
+        <!-- Honeypot antispam: invisible para personas, los bots lo rellenan -->
+        <div class="hp" aria-hidden="true">
+          <label for="cf-company">{L.honeypot}</label>
+          <input id="cf-company" name="company" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+        <input type="hidden" name="_lang" value={locale} />
+        <button type="submit" class="c-send" disabled={!formReady} data-sending={L.sending}>{L.send}</button>
+        <p class="c-status" role="status" aria-live="polite" data-ok={L.ok} data-err={L.err}></p>
+      </form>
+    </div>
+  </article>
+</Base>
+
+<script>
+  import { onPage } from '../scripts/motion';
+
+  onPage(() => {
+    const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+    if (!form) return;
+    const status = form.querySelector<HTMLElement>('.c-status')!;
+    const btn = form.querySelector<HTMLButtonElement>('.c-send')!;
+
+    const check = (el: HTMLInputElement | HTMLTextAreaElement) => {
+      const err = document.getElementById(el.getAttribute('aria-describedby')!)!;
+      let msg = '';
+      if (el.validity.valueMissing) msg = err.dataset.msg!;
+      else if (el.validity.typeMismatch) msg = err.dataset.msgType!;
+      else if (el.validity.tooShort) msg = err.dataset.msgShort!;
+      err.textContent = msg;
+      el.setAttribute('aria-invalid', String(!!msg));
+      return !msg;
+    };
+    const fields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input[required], textarea[required]'));
+    fields.forEach((f) => f.addEventListener('blur', () => check(f)));
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const ok = fields.map(check).every(Boolean);
+      if (!ok) {
+        fields.find((f) => f.getAttribute('aria-invalid') === 'true')?.focus();
+        return;
+      }
+      const data = new FormData(form);
+      if (data.get('company')) return; // bot
+      if (!form.action) return;
+      const label = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = btn.dataset.sending!;
+      try {
+        const res = await fetch(form.action, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        status.textContent = status.dataset.ok!;
+        status.dataset.state = 'ok';
+      } catch {
+        status.textContent = status.dataset.err!;
+        status.dataset.state = 'err';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = label;
+      }
+    });
+  });
+</script>
+
+<style>
+  .contact {
+    padding-top: calc(var(--header-h) + clamp(2rem, 8vw, 5rem));
+    padding-bottom: clamp(3rem, 8vw, 6rem);
+  }
+  .c-head {
+    display: grid;
+    gap: 1rem;
+    padding-bottom: clamp(2rem, 6vw, 4rem);
+  }
+  .c-title {
+    font-size: clamp(4rem, 1.5rem + 13vw, 15rem);
+    line-height: 0.85;
+    letter-spacing: -0.03em;
+  }
+  .c-lead {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    max-width: 28ch;
+    line-height: 1.2;
+  }
+  .c-grid {
+    display: grid;
+    gap: clamp(3rem, 6vw, 5rem);
+    border-top: 1px solid var(--line);
+    padding-top: clamp(2rem, 5vw, 3.5rem);
+  }
+  .c-info {
+    display: grid;
+    gap: 2rem;
+    align-content: start;
+  }
+  .c-info dt {
+    color: var(--fg-soft);
+    margin-bottom: 0.5rem;
+  }
+  .c-big {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+  }
+  .c-social {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.4rem;
+  }
+  .c-cv {
+    display: inline-flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1.2rem;
+    border-radius: 999px;
+    background: var(--fg);
+    color: var(--bg);
+    font-weight: 600;
+  }
+
+  .c-form {
+    display: grid;
+    gap: 1.2rem;
+    align-content: start;
+  }
+  .c-notice {
+    justify-self: start;
+    font-size: 0.78rem;
+  }
+  .field {
+    display: grid;
+    gap: 0.4rem;
+  }
+  .field label {
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+  .field input,
+  .field textarea {
+    font: inherit;
+    color: var(--fg);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid color-mix(in oklab, var(--fg) 45%, transparent);
+    padding: 0.6rem 0.1rem;
+    border-radius: 0;
+    resize: vertical;
+    transition: border-color 0.3s;
+  }
+  .field input:focus-visible,
+  .field textarea:focus-visible {
+    outline: none;
+    border-bottom: 2px solid var(--fg);
+  }
+  .field [aria-invalid='true'] {
+    border-bottom-color: #a1271b;
+  }
+  .err {
+    min-height: 1.2em;
+    font-size: 0.8rem;
+    color: #a1271b;
+  }
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .c-send {
+    justify-self: start;
+    padding: 0.9rem 1.8rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--fg);
+    color: var(--bg);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .c-send:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .c-status[data-state='ok'] {
+    color: #2c6b3a;
+  }
+  .c-status[data-state='err'] {
+    color: #a1271b;
+  }
+  @media (min-width: 900px) {
+    .c-grid {
+      grid-template-columns: 1fr 1.2fr;
+    }
+  }
+</style>

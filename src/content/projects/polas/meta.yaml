@@ -1,0 +1,29 @@
+order: 2
+slug: { es: polas, en: polas }
+title: POLAS
+kicker: { es: "Fanzine · Bolígrafo y digital", en: "Fanzine · Ballpoint pen & digital" }
+year: "2025"  # [PENDIENTE: confirmar año]
+discipline: { es: "Ilustración editorial", en: "Editorial illustration" }
+teaser:
+  es: "Un fanzine en blanco y negro dibujado a bolígrafo: una mente que se distorsiona, árboles que se retuercen y una amapola que lo cambia todo."
+  en: "A black-and-white fanzine drawn in ballpoint pen: a mind that warps, trees that twist and a poppy that changes everything."
+world:
+  id: polas
+  bg: "#0b0b0b"
+  ink: "#f2f0eb"
+  accent: "#ffffff"
+  muted: "#8c8c8c"
+  cursor: pen
+  transition: ink
+  wipe: "#0b0b0b"
+cover:
+  src: ../../../assets/projects/polas/cover-polas.png
+  position: "50% 50%"
+  alt:
+    es: "Portada del fanzine POLAS: ramas blancas rayadas a bolígrafo se enroscan como tentáculos sobre fondo negro."
+    en: "Cover of the POLAS fanzine: white ballpoint-hatched branches coil like tentacles over a black background."
+fragment:
+  src: ../../../assets/projects/polas/character-spine.png
+  alt:
+    es: "Perfil de una niña dibujada a bolígrafo cuya columna vertebral queda a la vista."
+    en: "Ballpoint profile of a girl with her spine exposed."

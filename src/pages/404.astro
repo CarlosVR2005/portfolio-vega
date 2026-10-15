@@ -1,0 +1,52 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base locale="es" title="Página no encontrada" alternates={{ es: '/', en: '/en/' }} noindex>
+  <section class="wrap nf">
+    <p class="display nf-code" aria-hidden="true">404</p>
+    <h1 class="display nf-title">Esta página se ha deshecho en arena.</h1>
+    <p lang="en" class="nf-en">This page has turned to sand.</p>
+    <div class="nf-links">
+      <a href="/" data-transition="plain">Volver al inicio</a>
+      <a href="/en/" lang="en" data-transition="plain">Back to home</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    min-height: 80vh;
+    padding-top: calc(var(--header-h) + 4rem);
+    display: grid;
+    align-content: center;
+    gap: 1rem;
+  }
+  .nf-code {
+    font-size: clamp(6rem, 3rem + 20vw, 22rem);
+    line-height: 0.8;
+    color: color-mix(in oklab, var(--fg) 12%, transparent);
+  }
+  .nf-title {
+    font-size: var(--step-3);
+    max-width: 18ch;
+  }
+  .nf-en {
+    color: var(--fg-soft);
+  }
+  .nf-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+  .nf-links a {
+    padding: 0.8rem 1.3rem;
+    border-radius: 999px;
+    border: 1px solid var(--fg);
+  }
+  .nf-links a:first-child {
+    background: var(--fg);
+    color: var(--bg);
+  }
+</style>

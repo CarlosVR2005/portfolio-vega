@@ -1,0 +1,785 @@
+---
+/**
+ * Caso POLAS — mundo en blanco y negro. La animación imita el bolígrafo:
+ * reveals de rayado, tentáculos que se enroscan, páginas que se pasan.
+ */
+import Image from '../../components/Img.astro';
+import type { ImageMetadata } from 'astro';
+import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '../../i18n/ui';
+import { md } from '../../lib/md';
+import Zoomable from '../../components/Zoomable.astro';
+import text from '../../content/projects/polas/case.json';
+
+import tentacles from '../../assets/projects/polas/cover-tentacles.png';
+import front from '../../assets/projects/polas/derived/cover-front.png';
+import hand from '../../assets/projects/polas/mockup-hand.jpg';
+import patternMock from '../../assets/projects/polas/mockup-pattern.jpg';
+import pattern from '../../assets/projects/polas/poppy-pattern.png';
+import poppies from '../../assets/projects/polas/poppies.png';
+
+interface Props {
+  locale: Locale;
+  project: CollectionEntry<'projects'>;
+}
+const { locale, project } = Astro.props;
+const d = project.data;
+const es = locale === 'es';
+const zoom = es ? 'Ampliar' : 'Zoom';
+
+const all = import.meta.glob<{ default: ImageMetadata }>('../../assets/projects/polas/**/*.{png,jpg}', { eager: true });
+const img = (name: string) => {
+  const hit = Object.entries(all).find(([k]) => k.endsWith(`/${name}.png`) || k.endsWith(`/${name}.jpg`));
+  if (!hit) throw new Error(`Imagen no encontrada: ${name}`);
+  return hit[1].default;
+};
+const sketches = [1, 2, 3, 4, 5, 6].map((n) => img(`sketchbook-0${n}`));
+const versions = [1, 2, 3, 4].map((n) => img(`perception-0${n}`));
+---
+
+<!-- ============ Portada ============ -->
+<section class="hero" data-polas-hero aria-labelledby="polas-title">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="tent tent-a" data-hatch="load">
+      <Image src={tentacles} alt="" widths={[800, 1400, 2000, 2477]} sizes="100vw" loading="eager" fetchpriority="high" />
+    </div>
+    <div class="tent tent-b">
+      <Image src={tentacles} alt="" widths={[800, 1400]} sizes="100vw" loading="eager" />
+    </div>
+  </div>
+  <div class="wrap hero-copy">
+    <p class="eyebrow hero-kicker">{d.kicker[locale]} · {d.year}</p>
+    <h1 id="polas-title" class="display hero-title">{d.title}</h1>
+    <p class="hero-teaser">{d.teaser[locale]}</p>
+  </div>
+</section>
+
+<!-- ============ Justificación + sinopsis ============ -->
+<section class="wrap intro">
+  <div class="intro-block">
+    <p class="eyebrow i-label">{text.intro.label[locale]}</p>
+    <p class="i-lead" set:html={md(text.intro.text[locale])} />
+  </div>
+  <div class="intro-block">
+    <p class="eyebrow i-label">{text.synopsis.label[locale]}</p>
+    <p class="i-text" set:html={md(text.synopsis.text[locale])} />
+  </div>
+  <dl class="facts">
+    {
+      text.intro.facts.map((f) => (
+        <div>
+          <dt>{f.k[locale]}</dt>
+          <dd>{f.v[locale]}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>
+
+<!-- ============ Páginas (recorrido horizontal) ============ -->
+<section class="pages" data-pages aria-labelledby="pages-title">
+  <div class="pages-pin">
+    <div class="pages-track">
+      <div class="page page-intro">
+        <p class="eyebrow i-label">{text.pages.label[locale]}</p>
+        <h2 id="pages-title" class="display pages-title">{text.pages.title[locale]}</h2>
+        <p class="pages-hint">{text.pages.hint[locale]} <span aria-hidden="true">→</span></p>
+      </div>
+      {
+        text.pages.items.map((p, i) => (
+          <figure class="page">
+            <div class="page-sheet">
+              <Zoomable src={img(p.img)} alt={p.alt[locale]} sizes="(min-width: 1024px) 62vw, 100vw" widths={[640, 1000, 1652]} zoomLabel={zoom} />
+            </div>
+            <figcaption class="page-cap">
+              <span class="page-n">{String(i + 1).padStart(2, '0')}</span>
+              {p.text ? (
+                <span class:list={['page-text', { 'sr-only': es }]}>{p.text[locale]}</span>
+              ) : (
+                <span class="page-text page-silent">{es ? 'Página sin texto' : 'No text on this page'}</span>
+              )}
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
+    <div class="pages-progress" aria-hidden="true"><span></span></div>
+  </div>
+</section>
+
+<!-- ============ Proceso: cuaderno ============ -->
+<section class="wrap process" aria-labelledby="process-title">
+  <div class="process-head">
+    <p class="eyebrow i-label">{text.process.label[locale]}</p>
+    <h2 id="process-title" class="display sec-title">{text.process.title[locale]}</h2>
+    <p class="i-text">{text.process.text[locale]}</p>
+  </div>
+  <div class="sketches">
+    {
+      sketches.map((s, i) => (
+        <figure class:list={['sketch', `sk-${i + 1}`]} data-hatch>
+          <Zoomable src={s} alt={text.process.alts[i][locale]} sizes="(min-width: 1024px) 33vw, 50vw" widths={[400, 700, 1100]} zoomLabel={zoom} />
+        </figure>
+      ))
+    }
+  </div>
+</section>
+
+<!-- ============ Percepción ============ -->
+<section class="perc" data-perc aria-labelledby="perc-title">
+  <svg class="perc-defs" aria-hidden="true" width="0" height="0">
+    <filter id="perc-warp" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.011 0.018" numOctaves="2" seed="3" />
+      <feDisplacementMap class="perc-disp" in="SourceGraphic" scale="0" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+  <div class="perc-stage">
+    <div class="wrap perc-grid">
+      <div class="perc-copy">
+        <p class="eyebrow perc-label">{text.perception.label[locale]}</p>
+        <h2 id="perc-title" class="display perc-title">{text.perception.title[locale]}</h2>
+        <ol class="perc-steps">
+          {text.perception.steps.map((s, i) => <li data-i={i}>{s[locale]}</li>)}
+        </ol>
+      </div>
+      <div class="perc-stack">
+        {
+          versions.map((v, i) => (
+            <Image class="perc-img" src={v} alt={text.perception.alts[i][locale]} widths={[500, 800, 1000]} sizes="(min-width: 1024px) 40vw, 80vw" data-i={i} />
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Amapolas ============ -->
+<section class="poppies" aria-labelledby="poppies-label">
+  <div class="wrap poppies-head">
+    <p id="poppies-label" class="eyebrow i-label">{text.poppies.label[locale]}</p>
+    <p class="i-text">{text.poppies.text[locale]}</p>
+  </div>
+  <div class="wrap poppies-art" data-hatch>
+    <Zoomable src={poppies} alt={es ? 'Amapolas y capullos dibujados a bolígrafo.' : 'Poppies and buds drawn in ballpoint pen.'} sizes="(min-width: 1200px) 1100px, 100vw" widths={[640, 1100, 1652]} zoomLabel={zoom} />
+  </div>
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-row">
+      {[0, 1, 2, 3, 4, 5].map(() => <Image src={pattern} alt="" widths={[600]} sizes="40vh" />)}
+    </div>
+  </div>
+</section>
+
+<!-- ============ El objeto ============ -->
+<section class="wrap object" aria-labelledby="object-title">
+  <p class="eyebrow i-label">{text.object.label[locale]}</p>
+  <h2 id="object-title" class="display sec-title">{text.object.title[locale]}</h2>
+  <div class="object-grid">
+    <div class="book-wrap" data-tilt>
+      <div class="book">
+        <Image src={front} alt={text.object.alts.cover[locale]} widths={[400, 700, 959]} sizes="(min-width: 1024px) 30vw, 70vw" />
+        <span class="book-spine" aria-hidden="true"></span>
+      </div>
+    </div>
+    <figure class="obj-photo obj-hand">
+      <Zoomable src={hand} alt={text.object.alts.hand[locale]} sizes="(min-width: 1024px) 40vw, 100vw" widths={[640, 1280]} zoomLabel={zoom} />
+    </figure>
+    <figure class="obj-photo obj-pattern">
+      <Zoomable src={patternMock} alt={text.object.alts.pattern[locale]} sizes="(min-width: 1024px) 40vw, 100vw" widths={[640, 1280]} zoomLabel={zoom} />
+    </figure>
+  </div>
+</section>
+
+<section class="wrap palette" aria-labelledby="pal-label">
+  <p id="pal-label" class="eyebrow i-label">{text.palette.label[locale]}</p>
+  <ul class="swatches" role="list">
+    {
+      text.palette.colors.map((c) => (
+        <li class="swatch" style={`--c:${c}`}>
+          <span class="chip" />
+          <code>{c}</code>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="pal-note">{text.palette.note[locale]}</p>
+</section>
+
+<script>
+  import '../../scripts/hatch';
+  import { onPage, gsap, reducedMotion, finePointer, getLenis } from '../../scripts/motion';
+
+  onPage(() => {
+    const hero = document.querySelector<HTMLElement>('[data-polas-hero]');
+    if (!hero || reducedMotion()) return;
+    const cleanups: (() => void)[] = [];
+
+    // --- Tentáculos que se enroscan al hacer scroll ---------------------
+    gsap.timeline({ scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } })
+      .to('.tent-a', { rotate: 9, scale: 1.22, ease: 'none' }, 0)
+      .to('.tent-b', { rotate: -14, scale: 1.4, ease: 'none' }, 0)
+      .to('.hero-copy', { yPercent: 30, autoAlpha: 0, ease: 'none' }, 0);
+    gsap.from('.hero-title', { yPercent: 40, autoAlpha: 0, duration: 1.2, ease: 'expo.out', delay: 0.3 });
+
+    // --- Páginas: recorrido horizontal (tablet/escritorio) ---------------
+    const mm = gsap.matchMedia();
+    mm.add('(min-width: 768px)', () => {
+      const section = document.querySelector<HTMLElement>('[data-pages]')!;
+      const track = section.querySelector<HTMLElement>('.pages-track')!;
+      const bar = section.querySelector<HTMLElement>('.pages-progress span')!;
+      const distance = () => track.scrollWidth - window.innerWidth;
+      const tween = gsap.to(track, {
+        x: () => -distance(),
+        ease: 'none',
+        scrollTrigger: {
+          trigger: section,
+          start: 'top top',
+          end: () => `+=${distance()}`,
+          pin: section.querySelector('.pages-pin'),
+          scrub: 0.7,
+          invalidateOnRefresh: true,
+          onUpdate: (st) => (bar.style.transform = `scaleX(${st.progress})`),
+        },
+      });
+      // Teclado: al enfocar un enlace del recorrido, desplaza la página hasta que sea visible
+      const onFocus = (e: FocusEvent) => {
+        const page = (e.target as Element).closest<HTMLElement>('.page');
+        const st = tween.scrollTrigger;
+        if (!page || !st) return;
+        const target = Math.min(distance(), Math.max(0, page.offsetLeft - window.innerWidth * 0.2));
+        const y = st.start + (target / distance()) * (st.end - st.start);
+        getLenis()?.scrollTo(y, { immediate: true }) ?? window.scrollTo(0, y);
+      };
+      track.addEventListener('focusin', onFocus);
+
+      // Cada doble página gira levemente al pasar, como una hoja
+      gsap.utils.toArray<HTMLElement>('.page-sheet', section).forEach((sheet) => {
+        gsap.fromTo(
+          sheet,
+          { rotateY: -24, transformOrigin: '0% 50%' },
+          {
+            rotateY: 0,
+            ease: 'none',
+            scrollTrigger: { trigger: sheet, containerAnimation: tween, start: 'left 100%', end: 'left 35%', scrub: true },
+          },
+        );
+        gsap.to(sheet, {
+          rotateY: 18,
+          transformOrigin: '100% 50%',
+          autoAlpha: 0.35,
+          ease: 'none',
+          immediateRender: false,
+          scrollTrigger: { trigger: sheet, containerAnimation: tween, start: 'right 30%', end: 'right -10%', scrub: true },
+        });
+      });
+    });
+
+    // --- Percepción: el personaje cambia de versión ----------------------
+    const perc = document.querySelector<HTMLElement>('[data-perc]')!;
+    const imgs = gsap.utils.toArray<HTMLElement>('.perc-img', perc);
+    const steps = gsap.utils.toArray<HTMLElement>('.perc-steps li', perc);
+    const disp = perc.querySelector('.perc-disp')!;
+    const warp = window.innerWidth >= 768; // el filtro SVG solo en pantallas grandes
+    if (warp) perc.classList.add('is-warp');
+    gsap.set(imgs.slice(1), { autoAlpha: 0 });
+    const dim = window.innerWidth < 768 ? 0 : 0.5;
+    gsap.set(steps.slice(1), { autoAlpha: dim });
+    const ptl = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: {
+        trigger: perc,
+        start: 'top top',
+        end: () => `+=${window.innerHeight * 2.4}`,
+        pin: perc.querySelector('.perc-stage'),
+        scrub: 0.6,
+        invalidateOnRefresh: true,
+      },
+    });
+    for (let i = 1; i < imgs.length; i++) {
+      const at = i - 0.5;
+      ptl.to(imgs[i - 1], { autoAlpha: 0, scale: 1.04, duration: 0.5 }, at)
+        .fromTo(imgs[i], { autoAlpha: 0, scale: 0.97 }, { autoAlpha: 1, scale: 1, duration: 0.5 }, at)
+        .to(steps[i - 1], { autoAlpha: dim, duration: 0.2 }, at + 0.2)
+        .to(steps[i], { autoAlpha: 1, duration: 0.2 }, at + 0.2);
+      if (warp) {
+        ptl.to(disp, { attr: { scale: 70 }, duration: 0.25 }, at).to(disp, { attr: { scale: 0 }, duration: 0.25 }, at + 0.25);
+      }
+    }
+    ptl.to({}, { duration: 0.5 });
+
+    // --- Portada con tilt 3D --------------------------------------------
+    const tilt = document.querySelector<HTMLElement>('[data-tilt]');
+    if (tilt && finePointer()) {
+      const book = tilt.querySelector<HTMLElement>('.book')!;
+      const rx = gsap.quickTo(book, 'rotationX', { duration: 0.6, ease: 'power3' });
+      const ry = gsap.quickTo(book, 'rotationY', { duration: 0.6, ease: 'power3' });
+      const move = (e: PointerEvent) => {
+        const r = tilt.getBoundingClientRect();
+        ry(((e.clientX - r.left) / r.width - 0.5) * 30);
+        rx(-((e.clientY - r.top) / r.height - 0.5) * 22);
+      };
+      const leave = () => (rx(0), ry(-12));
+      tilt.addEventListener('pointermove', move);
+      tilt.addEventListener('pointerleave', leave);
+      leave();
+      cleanups.push(() => {
+        tilt.removeEventListener('pointermove', move);
+        tilt.removeEventListener('pointerleave', leave);
+      });
+    }
+
+    return () => {
+      mm.revert();
+      cleanups.forEach((c) => c());
+    };
+  });
+</script>
+
+<style>
+  .i-label {
+    color: var(--fg-soft);
+  }
+  .sec-title {
+    font-size: var(--step-4);
+    max-width: 18ch;
+  }
+
+  /* ---- Portada ---- */
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: grid;
+    align-items: end;
+    overflow: hidden;
+    background: #000;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+  }
+  .hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, #000 0%, rgb(0 0 0 / 0.85) 28%, rgb(0 0 0 / 0) 62%);
+  }
+  .tent {
+    position: absolute;
+    inset: -8%;
+  }
+  .tent :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .tent-b {
+    opacity: 0.22;
+    scale: -1 1;
+    mix-blend-mode: screen;
+  }
+  .hero-copy {
+    position: relative;
+    z-index: 2;
+    padding-bottom: clamp(2rem, 7vw, 5rem);
+    display: grid;
+    gap: 0.8rem;
+  }
+  .hero-copy::before {
+    content: '';
+    position: absolute;
+    inset: -40% -10% -10%;
+    background: radial-gradient(60% 60% at 25% 70%, rgb(0 0 0 / 0.85), transparent 70%);
+    z-index: -1;
+  }
+  .hero-kicker {
+    color: #bdbdbd;
+  }
+  .hero-title {
+    font-size: clamp(5.5rem, 1rem + 22vw, 22rem);
+    line-height: 0.78;
+    letter-spacing: -0.04em;
+    color: #fff;
+  }
+  .hero-teaser {
+    max-width: 36ch;
+    font-size: var(--step-1);
+  }
+
+  /* ---- Intro ---- */
+  .intro {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4rem);
+    padding-block: clamp(5rem, 12vw, 10rem) clamp(3rem, 8vw, 6rem);
+  }
+  .intro-block {
+    display: grid;
+    gap: 1rem;
+  }
+  .i-lead {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: 1.22;
+    max-width: 36ch;
+  }
+  .i-text {
+    max-width: 52ch;
+    color: color-mix(in oklab, var(--fg) 82%, transparent);
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 1rem 2rem;
+    border-top: 1px solid var(--line);
+    padding-top: 1.5rem;
+    font-size: var(--step--1);
+  }
+  .facts dt {
+    color: var(--fg-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.72rem;
+  }
+  @media (min-width: 1024px) {
+    .intro {
+      grid-template-columns: 1.4fr 1fr;
+      align-items: start;
+    }
+    .facts {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* ---- Páginas ---- */
+  .pages {
+    position: relative;
+  }
+  .pages-pin {
+    position: relative;
+    overflow: hidden;
+  }
+  .pages-track {
+    display: grid;
+    gap: 3rem;
+    padding: 2rem var(--gutter) 4rem;
+  }
+  .page {
+    margin: 0;
+    display: grid;
+    gap: 1rem;
+  }
+  .page-sheet {
+    background: #fff;
+    box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.9);
+    will-change: transform;
+  }
+  .page-cap {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.9rem;
+    align-items: start;
+    max-width: 46ch;
+    font-size: var(--step--1);
+    line-height: 1.55;
+  }
+  .page-n {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    line-height: 1;
+    color: var(--fg-soft);
+  }
+  .page-silent {
+    color: var(--fg-soft);
+    font-style: italic;
+  }
+  .pages-title {
+    font-size: var(--step-4);
+  }
+  .pages-hint {
+    color: var(--fg-soft);
+    font-size: var(--step--1);
+    display: none;
+  }
+  .pages-progress {
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .pages-pin {
+      height: 100svh;
+      display: flex;
+      align-items: center;
+    }
+    .pages-track {
+      display: flex;
+      align-items: center;
+      gap: clamp(3rem, 6vw, 7rem);
+      padding: var(--header-h) var(--gutter) 0;
+      width: max-content;
+      perspective: 1600px;
+    }
+    .page {
+      width: min(62vw, 120svh);
+      grid-template-columns: 1fr;
+    }
+    .page-intro {
+      width: min(30vw, 26rem);
+      align-content: center;
+      gap: 1.2rem;
+    }
+    .pages-hint {
+      display: block;
+    }
+    .pages-progress {
+      display: block;
+      position: absolute;
+      left: var(--gutter);
+      right: var(--gutter);
+      bottom: 1.5rem;
+      height: 1px;
+      background: var(--line);
+    }
+    .pages-progress span {
+      display: block;
+      height: 100%;
+      background: var(--fg);
+      transform-origin: left;
+      transform: scaleX(0);
+    }
+  }
+
+  /* ---- Cuaderno ---- */
+  .process {
+    padding-block: clamp(4rem, 10vw, 8rem);
+  }
+  .process-head {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: clamp(2rem, 5vw, 4rem);
+  }
+  .sketches {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(0.6rem, 1.5vw, 1.25rem);
+  }
+  .sketch {
+    margin: 0;
+  }
+  .sketch :global(img) {
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.05);
+    transition: filter 0.6s;
+  }
+  .sketch:hover :global(img) {
+    filter: none;
+  }
+  @media (min-width: 1024px) {
+    .sketches {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .sk-1,
+    .sk-2 {
+      grid-row: span 2;
+    }
+    .sk-1 :global(img),
+    .sk-2 :global(img) {
+      aspect-ratio: 3 / 4;
+    }
+  }
+
+  /* ---- Percepción (página en blanco: el mundo se invierte) ---- */
+  .perc {
+    background: #f4f2ee;
+    color: #0d0d0d;
+  }
+  .perc-defs {
+    position: absolute;
+  }
+  .perc-stage {
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    padding-block: calc(var(--header-h) + 1rem) 2rem;
+    overflow: hidden;
+  }
+  .perc-grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+  .perc-label {
+    color: #6b6b6b;
+  }
+  .perc-title {
+    font-size: var(--step-3);
+    max-width: 16ch;
+    margin-block: 0.6rem 1.2rem;
+  }
+  .perc-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.4rem;
+    font-size: var(--step-1);
+  }
+  .perc-steps li::before {
+    content: '— ';
+    color: #8f8f8f;
+  }
+  .perc-stack {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    width: min(100%, 52svh);
+    justify-self: center;
+  }
+  .perc-stack :global(.perc-img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    box-shadow: 0 30px 60px -40px rgb(0 0 0 / 0.5);
+  }
+  .perc.is-warp .perc-stack {
+    filter: url(#perc-warp);
+  }
+  @media (max-width: 767px) {
+    .perc-steps li {
+      grid-area: 1 / 1;
+    }
+    .perc-title {
+      font-size: var(--step-2);
+    }
+  }
+  @media (min-width: 1024px) {
+    .perc-grid {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+    }
+    .perc-stack {
+      width: min(100%, 72svh * 0.8);
+    }
+  }
+
+  /* ---- Amapolas ---- */
+  .poppies {
+    padding-block: clamp(4rem, 10vw, 8rem) 0;
+    overflow: hidden;
+  }
+  .poppies-head {
+    display: grid;
+    gap: 0.6rem;
+    margin-bottom: 2rem;
+  }
+  .poppies-art :global(img) {
+    width: 100%;
+  }
+  .marquee {
+    margin-top: clamp(3rem, 8vw, 6rem);
+    overflow: hidden;
+    height: clamp(12rem, 34vh, 22rem);
+  }
+  .marquee-row {
+    display: flex;
+    height: 100%;
+    width: max-content;
+    animation: marquee 80s linear infinite;
+  }
+  .marquee-row :global(img) {
+    height: 100%;
+    width: auto;
+    display: block;
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* ---- Objeto ---- */
+  .object {
+    display: grid;
+    gap: 1rem;
+    padding-block: clamp(4rem, 10vw, 8rem);
+  }
+  .object-grid {
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    margin-top: 2rem;
+  }
+  .book-wrap {
+    perspective: 1200px;
+    display: grid;
+    place-items: center;
+    padding-block: 2rem;
+  }
+  .book {
+    position: relative;
+    width: min(70vw, 22rem);
+    transform-style: preserve-3d;
+    box-shadow:
+      30px 40px 60px -20px rgb(0 0 0 / 0.8),
+      0 0 0 1px rgb(255 255 255 / 0.06);
+  }
+  .book :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .book-spine {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 6%;
+    background: linear-gradient(90deg, rgb(255 255 255 / 0.12), transparent 60%, rgb(0 0 0 / 0.4));
+  }
+  .obj-photo {
+    margin: 0;
+  }
+  @media (min-width: 1024px) {
+    .object-grid {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+    }
+    .book-wrap {
+      grid-row: span 2;
+    }
+    .book {
+      width: min(28vw, 26rem);
+    }
+  }
+
+  /* ---- Paleta ---- */
+  .palette {
+    display: grid;
+    gap: 1.2rem;
+    padding-block: 2rem clamp(3rem, 8vw, 6rem);
+  }
+  .swatches {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.6rem;
+  }
+  .swatch {
+    display: grid;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    color: var(--fg-soft);
+  }
+  .chip {
+    display: block;
+    aspect-ratio: 1;
+    background: var(--c);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
+  }
+  .pal-note {
+    font-size: var(--step--1);
+    color: var(--fg-soft);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-row {
+      animation: none;
+    }
+  }
+</style>

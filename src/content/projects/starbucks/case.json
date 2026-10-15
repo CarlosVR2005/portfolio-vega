@@ -1,0 +1,72 @@
+{
+  "_comment": "Textos del caso Starbucks. ES = texto de Vega corregido (ver CORRECCIONES.md). Las descripciones de cada escena son microcopy nuevo (describen la imagen). EN pendiente de revisión.",
+  "intro": {
+    "label": { "es": "La campaña", "en": "The campaign" },
+    "text": [
+      {
+        "es": "La campaña se desarrolla a través de tres ilustraciones inspiradas en momentos icónicos de Estados Unidos: Navidad, el 4 de julio y el US Open. La línea gráfica toma referencias del universo visual de Disney y de la ilustración cinematográfica contemporánea, con una estética cálida, emocional y narrativa.",
+        "en": "The campaign unfolds across three illustrations inspired by iconic American moments: Christmas, the Fourth of July and the US Open. The visual language draws on the world of Disney and contemporary cinematic illustration, with a warm, emotional, story-driven feel."
+      },
+      {
+        "es": "El objetivo fue representar a Starbucks como parte de experiencias memorables y cotidianas, integrando la marca de forma natural en escenas llenas de atmósfera, luz y conexión humana. Cada pieza trabaja una paleta cromática específica y una ambientación propia para transmitir la esencia de cada celebración, manteniendo una identidad visual coherente, artística y aspiracional.",
+        "en": "The goal was to show Starbucks as part of memorable, everyday experiences, weaving the brand naturally into scenes full of atmosphere, light and human connection. Each piece has its own colour palette and setting to capture the essence of each celebration, while keeping a coherent, artistic and aspirational visual identity."
+      }
+    ],
+    "facts": [
+      { "k": { "es": "Disciplina", "en": "Discipline" }, "v": { "es": "Ilustración publicitaria", "en": "Advertising illustration" } },
+      { "k": { "es": "Técnica", "en": "Technique" }, "v": { "es": "Ilustración digital", "en": "Digital illustration" } },
+      { "k": { "es": "Piezas", "en": "Pieces" }, "v": { "es": "3 carteles + adaptaciones en mockup", "en": "3 posters + mockup adaptations" } },
+      { "k": { "es": "Contexto", "en": "Context" }, "v": { "es": "Proyecto académico · Bellas Artes, UFV", "en": "Academic project · Fine Arts, UFV" } }
+    ]
+  },
+  "scenes": [
+    {
+      "id": "july",
+      "img": "july-4th",
+      "n": "01",
+      "title": { "es": "4 de julio", "en": "Fourth of July" },
+      "text": { "es": "Fuegos artificiales sobre los tejados de la ciudad y dos personas que lo celebran con un café en la azotea.", "en": "Fireworks over the city rooftops and two people celebrating with a coffee on the roof." },
+      "hint": { "es": "Haz clic sobre el cielo", "en": "Click the sky" },
+      "alt": { "es": "Cartel del 4 de julio: fuegos artificiales sobre tejados de Nueva York al anochecer; una pareja toma café en una azotea.", "en": "Fourth of July poster: fireworks over New York rooftops at dusk; a couple has coffee on a rooftop." },
+      "bg": ["#1f1b2e", "#2a3257", "#6b5270"],
+      "palette": ["#1f1b2e", "#2a3257", "#44395b", "#6b5270", "#726d84", "#c5c1c4"]
+    },
+    {
+      "id": "christmas",
+      "img": "christmas",
+      "n": "02",
+      "title": { "es": "Navidad", "en": "Christmas" },
+      "text": { "es": "Un muñeco de nieve sonriente bajo guirnaldas de luces y dos personas que comparten un café en la calle.", "en": "A smiling snowman under string lights and two people sharing a coffee in the street." },
+      "hint": null,
+      "alt": { "es": "Cartel de Navidad: un muñeco de nieve con sombrero y bufanda bajo guirnaldas de luces; dos personas toman café junto a él.", "en": "Christmas poster: a snowman in a hat and scarf beneath string lights; two people have coffee beside it." },
+      "bg": ["#322a2a", "#5b4353", "#6c6994"],
+      "palette": ["#322a2a", "#5b4353", "#76566b", "#6c6994", "#c1b8c8", "#f6ebe1"]
+    },
+    {
+      "id": "usopen",
+      "img": "us-open",
+      "n": "03",
+      "title": { "es": "US Open", "en": "US Open" },
+      "text": { "es": "La pista de tierra batida al atardecer, el skyline y el puente al fondo, y el público con sus vasos en primer plano.", "en": "The clay court at sunset, the skyline and bridge behind, and the crowd holding their cups in the foreground." },
+      "hint": null,
+      "alt": { "es": "Cartel del US Open: estadio de tenis al atardecer con el skyline y un puente al fondo; espectadores con vasos de café en primer plano.", "en": "US Open poster: tennis stadium at sunset with the skyline and a bridge behind; spectators holding coffee cups in the foreground." },
+      "bg": ["#253a53", "#756467", "#d1713b"],
+      "palette": ["#1a1a20", "#253a53", "#756467", "#97abb7", "#b3cbda", "#d1713b"]
+    }
+  ],
+  "mockups": {
+    "label": { "es": "En contexto", "en": "In context" },
+    "title": { "es": "La campaña en la calle", "en": "The campaign on the street" },
+    "items": [
+      { "img": "mockup-street", "k": { "es": "Mupi en la calle", "en": "Street billboard" }, "alt": { "es": "Mockup del cartel de Navidad en un mupi de una avenida con peatones.", "en": "Mockup of the Christmas poster on a street billboard on an avenue with pedestrians." } },
+      { "img": "mockup-wall", "k": { "es": "Cartel en muro", "en": "Wall poster" }, "alt": { "es": "Mockup del cartel del US Open sobre un muro de hormigón con sombras de hojas.", "en": "Mockup of the US Open poster on a concrete wall with leaf shadows." } },
+      { "img": "mockup-tablet", "k": { "es": "Tablet", "en": "Tablet" }, "alt": { "es": "Mockup del cartel del 4 de julio en la pantalla de una tablet.", "en": "Mockup of the Fourth of July poster on a tablet screen." } }
+    ],
+    "prev": { "es": "Anterior", "en": "Previous" },
+    "next": { "es": "Siguiente", "en": "Next" }
+  },
+  "disclaimer": {
+    "es": "Proyecto académico realizado en Bellas Artes (UFV). Campaña conceptual sin vinculación, patrocinio ni encargo de Starbucks. La marca y sus logotipos pertenecen a sus propietarios.",
+    "en": "Academic project made at the Fine Arts school (UFV). A concept campaign with no affiliation, sponsorship or commission from Starbucks. The brand and its logos belong to their owners."
+  }
+}

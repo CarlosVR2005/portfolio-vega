@@ -1,0 +1,241 @@
+---
+/**
+ * Paisaje por capas (cielo, montañas, Bastian) + escala dramática:
+ * al hacer scroll Goab emerge por detrás de la cresta y crece hasta dominar
+ * el cielo, mientras Bastian sigue diminuto en primer plano.
+ * Las capas se generan con scripts/prepare-goab.py a partir del paisaje original.
+ */
+import Image from '../../components/Img.astro';
+import type { Locale } from '../../i18n/ui';
+import sky from '../../assets/projects/goab/layers/sky.png';
+import mountains from '../../assets/projects/goab/layers/mountains.png';
+import bastian from '../../assets/projects/goab/layers/bastian.png';
+import goab from '../../assets/projects/goab/goab-crouch-cutout.png';
+import final from '../../assets/projects/goab/final-illustration.jpg';
+import text from '../../content/projects/goab/case.json';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const es = locale === 'es';
+// Caja de Bastian dentro del paisaje (fracciones), calculada por prepare-goab.py
+const B = { x: 0.8438, y: 0.624, w: 0.1359, h: 0.2781 };
+---
+
+<section class="scale" data-scale data-warm aria-label={text.scale.label[locale]}>
+  <div class="scale-stage">
+    <div class="scale-world">
+      <Image class="layer l-sky" src={sky} alt="" widths={[800, 1376]} sizes="(min-width: 768px) 100vw, 200vw" />
+      <Image
+        class="layer l-goab"
+        src={goab}
+        alt={es ? 'Goab emerge tras las montañas y crece hasta ocupar el cielo.' : 'Goab rises behind the mountains and grows until it fills the sky.'}
+        widths={[700, 1100, 1600]}
+        sizes="(min-width: 768px) 80vw, 160vw"
+      />
+      <div class="layer l-haze" aria-hidden="true"></div>
+      <Image class="layer l-mountains" src={mountains} alt="" widths={[800, 1376]} sizes="(min-width: 768px) 100vw, 200vw" />
+      <Image
+        class="l-bastian"
+        src={bastian}
+        alt={es ? 'Silueta diminuta de Bastian en primer plano.' : 'Tiny silhouette of Bastian in the foreground.'}
+        widths={[240]}
+        style={`left:${B.x * 100}%;top:${B.y * 100}%;width:${B.w * 100}%;`}
+      />
+    </div>
+    <div class="scale-vignette" aria-hidden="true"></div>
+    <!-- Final del recorrido: el paisaje se funde en la ilustración final -->
+    <Image class="scale-final" src={final} alt="" widths={[800, 1280, 1920, 2477]} sizes="100vw" />
+    <div class="scale-dune" aria-hidden="true"></div>
+
+    <div class="wrap scale-copy">
+      <p class="eyebrow scale-label">{text.scale.label[locale]}</p>
+      <p class="display scale-lines">
+        {text.scale.lines.map((l) => <span class="scale-line">{l[locale]} </span>)}
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { onPage, gsap, reducedMotion } from '../../scripts/motion';
+
+  onPage(() => {
+    const root = document.querySelector<HTMLElement>('[data-scale]');
+    if (!root) return;
+    const q = gsap.utils.selector(root);
+    if (reducedMotion()) {
+      root.classList.add('is-static');
+      return;
+    }
+    const mobile = window.innerWidth < 768;
+    gsap.set(q('.scale-line'), { autoAlpha: 0, y: 20 });
+
+    // Entrada (antes de fijar): la banda de arena se disipa y el paisaje se acerca
+    gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: { trigger: root, start: 'top bottom', end: 'top top', scrub: true },
+    })
+      .fromTo(q('.scale-world'), { scale: 1.12, yPercent: 6 }, { scale: 1, yPercent: 0 }, 0)
+      .fromTo(q('.scale-dune'), { opacity: 1 }, { opacity: 0 }, 0.35)
+      .fromTo(q('.l-goab'), { yPercent: 60 }, { yPercent: 44 }, 0);
+
+    const tl = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: {
+        trigger: root,
+        start: 'top top',
+        end: () => `+=${window.innerHeight * (mobile ? 2.4 : 3)}`,
+        pin: q('.scale-stage')[0],
+        scrub: 0.8,
+        invalidateOnRefresh: true,
+      },
+    });
+    // Capas: el cielo apenas se mueve, las montañas un poco más
+    tl.fromTo(q('.l-sky'), { yPercent: -3, scale: 1.1 }, { yPercent: 2, scale: 1.03, duration: 0.8 }, 0)
+      .fromTo(q('.l-mountains'), { yPercent: 2 }, { yPercent: 0, duration: 0.8 }, 0)
+      .fromTo(q('.l-bastian'), { yPercent: 10, scale: 1.04 }, { yPercent: 0, scale: 0.92, duration: 0.8 }, 0)
+      // Goab sigue emergiendo desde detrás de la cresta y crece
+      .fromTo(
+        q('.l-goab'),
+        { yPercent: 44, scale: 0.5, filter: 'brightness(0.6) blur(1.5px)' },
+        { yPercent: 16, scale: mobile ? 1 : 1.2, filter: 'brightness(1) blur(0px)', duration: 0.7, ease: 'power1.inOut', immediateRender: false },
+        0,
+      )
+      .fromTo(q('.l-haze'), { opacity: 0.25 }, { opacity: 0.85, duration: 0.7 }, 0)
+      // Salida: fundido a la ilustración final (sin duplicarla debajo)
+      .to(q('.scale-copy'), { autoAlpha: 0, duration: 0.05 }, 0.8)
+      .fromTo(q('.scale-final'), { autoAlpha: 0, scale: 1.08 }, { autoAlpha: 1, scale: 1, duration: 0.14, ease: 'power1.out' }, 0.8)
+      .to({}, { duration: 0.06 });
+
+    // Una frase cada vez
+    const lines = q('.scale-line');
+    lines.forEach((el, i) => {
+      const at = 0.02 + i * 0.19;
+      tl.to(el, { autoAlpha: 1, y: 0, duration: 0.05 }, at);
+      if (i < lines.length - 1) tl.to(el, { autoAlpha: 0, y: -20, duration: 0.04 }, at + 0.15);
+    });
+  });
+</script>
+
+<style>
+  .scale {
+    position: relative;
+    background: #1d1513;
+  }
+  .scale-dune {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 55%;
+    background: linear-gradient(to bottom, #cfaa72, rgb(207 170 114 / 0.6) 35%, rgb(207 170 114 / 0));
+    pointer-events: none;
+    z-index: 3;
+  }
+  .scale-final {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 30% 50%;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 2;
+  }
+  .scale-stage {
+    position: relative;
+    height: 100svh;
+    min-height: 32rem;
+    overflow: hidden;
+  }
+  /* El "mundo" conserva la proporción 4:3 del paisaje y cubre la pantalla.
+     --focus-x decide qué parte se ve en pantallas estrechas (Bastian a la derecha). */
+  .scale-world {
+    /* Móvil: encuadre más abierto (el cielo superior se funde con el fondo) */
+    --w: max(100vw, 105svh);
+    --focus-x: 1;
+    position: absolute;
+    width: var(--w);
+    height: calc(var(--w) * 0.75);
+    left: calc((100vw - var(--w)) * var(--focus-x));
+    bottom: 0;
+  }
+  .layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    will-change: transform;
+  }
+  .l-goab {
+    inset: auto;
+    left: 18%;
+    bottom: 30%;
+    width: 64%;
+    height: auto;
+    object-fit: contain;
+    transform-origin: 50% 85%;
+    filter: drop-shadow(0 30px 40px rgb(30 20 15 / 0.45));
+  }
+  .l-haze {
+    background: linear-gradient(to top, rgb(248 234 174 / 0) 38%, rgb(248 234 174 / 0.35) 52%, rgb(207 170 114 / 0) 66%);
+    mix-blend-mode: screen;
+  }
+  .l-bastian {
+    position: absolute;
+    height: auto;
+    transform-origin: 50% 100%;
+  }
+  .scale-vignette {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom, rgb(29 21 19 / 0.9), rgb(29 21 19 / 0.55) 22%, transparent 45%),
+      radial-gradient(120% 90% at 50% 60%, transparent 55%, rgb(29 21 19 / 0.6));
+    pointer-events: none;
+  }
+  .scale-copy {
+    position: absolute;
+    inset: calc(var(--header-h) + 1rem) 0 auto;
+    z-index: 2;
+  }
+  .scale-label {
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+  }
+  .scale-lines {
+    display: grid;
+    max-width: 24ch;
+    font-size: var(--step-3);
+    line-height: 1.04;
+    color: #f8eaae;
+    text-shadow: 0 2px 24px rgb(29 21 19 / 0.8);
+  }
+  .scale-line {
+    grid-area: 1 / 1;
+  }
+  @media (max-width: 767px) {
+    .l-goab {
+      left: 34%;
+      width: 60%;
+    }
+  }
+  @media (min-width: 768px) {
+    .scale-world {
+      --w: max(100vw, 133.33svh);
+      --focus-x: 0.5;
+    }
+  }
+
+  .scale.is-static .l-goab {
+    transform: translateY(16%) scale(1.2);
+  }
+  .scale.is-static .scale-lines {
+    display: block;
+  }
+  .scale.is-static .scale-dune {
+    display: none;
+  }
+</style>

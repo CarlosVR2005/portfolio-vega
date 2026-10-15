@@ -1,0 +1,248 @@
+---
+import Base from '../layouts/Base.astro';
+import Field from '../components/Field.astro';
+import site from '../content/site.json';
+import { routes, isPending, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const es = locale === 'es';
+const a = site.about;
+const L = {
+  title: es ? 'Sobre mí' : 'About',
+  education: es ? 'Formación' : 'Education',
+  techniques: es ? 'Técnicas' : 'Techniques',
+  techNote: es ? 'Las que se ven en este portfolio.' : 'As seen in this portfolio.',
+  software: 'Software',
+  exhibitions: es ? 'Exposiciones' : 'Exhibitions',
+  awards: es ? 'Premios' : 'Awards',
+  experience: es ? 'Experiencia' : 'Experience',
+  languages: es ? 'Idiomas' : 'Languages',
+  cta: es ? '¿Hablamos?' : 'Let’s talk',
+  ctaText: es ? 'Abierta a proyectos de ilustración, dirección de arte y prácticas.' : 'Open to illustration, art direction and internship opportunities.',
+};
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle: site.role[locale],
+  url: new URL(routes.home[locale], Astro.site).href,
+  address: { '@type': 'PostalAddress', addressLocality: 'Madrid', addressCountry: 'ES' },
+  alumniOf: { '@type': 'CollegeOrUniversity', name: 'Universidad Francisco de Vitoria' },
+  knowsAbout: a.techniques[locale],
+  sameAs: site.social.map((s) => s.url).filter((u) => !isPending(u)),
+};
+---
+
+<Base locale={locale} title={L.title} description={a.intro[locale]} alternates={{ es: routes.about.es, en: routes.about.en }}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(personLd)} />
+  <article class="about">
+    <header class="wrap ab-head">
+      <h1 class="display ab-title" data-split-title>{L.title}</h1>
+    </header>
+
+    <div class="wrap ab-grid">
+      <figure class="portrait">
+        <div class="portrait-frame">
+          <Field value={a.portrait} />
+        </div>
+      </figure>
+
+      <div class="ab-text">
+        <p class="ab-intro" data-lines>{a.intro[locale]}</p>
+        <p class="pending ab-note">{a.introNote[locale]}</p>
+        <Field value={a.bioLong[locale]} as="p" />
+        <p class="ab-tagline">{site.taglineShort[locale]}</p>
+      </div>
+    </div>
+
+    <div class="wrap ab-facts">
+      <section class="fact" aria-labelledby="f-edu">
+        <h2 id="f-edu" class="eyebrow">{L.education}</h2>
+        <ul role="list">
+          {
+            a.education.map((e) => (
+              <li>
+                <strong>{e.title[locale]}</strong>
+                <span>{e.place}</span>
+                <Field value={e.years} />
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+      <section class="fact" aria-labelledby="f-tech">
+        <h2 id="f-tech" class="eyebrow">{L.techniques}</h2>
+        <ul role="list" class="chips">
+          {a.techniques[locale].map((t) => <li>{t}</li>)}
+        </ul>
+        <p class="fact-note">{L.techNote}</p>
+      </section>
+      <section class="fact" aria-labelledby="f-soft">
+        <h2 id="f-soft" class="eyebrow">{L.software}</h2>
+        <Field value={a.software} as="p" />
+      </section>
+      <section class="fact" aria-labelledby="f-exp">
+        <h2 id="f-exp" class="eyebrow">{L.experience}</h2>
+        <Field value={a.experience} as="p" />
+      </section>
+      <section class="fact" aria-labelledby="f-exh">
+        <h2 id="f-exh" class="eyebrow">{L.exhibitions}</h2>
+        <Field value={a.exhibitions} as="p" />
+      </section>
+      <section class="fact" aria-labelledby="f-aw">
+        <h2 id="f-aw" class="eyebrow">{L.awards}</h2>
+        <Field value={a.awards} as="p" />
+      </section>
+      <section class="fact" aria-labelledby="f-lang">
+        <h2 id="f-lang" class="eyebrow">{L.languages}</h2>
+        <Field value={a.languages} as="p" />
+      </section>
+    </div>
+
+    <aside class="wrap ab-cta" aria-label={L.cta}>
+      <p class="display ab-cta-title">{L.cta}</p>
+      <p>{L.ctaText}</p>
+      <a class="ab-cta-link" href={routes.contact[locale]} data-transition="plain">{es ? 'Contacto' : 'Contact'} <span aria-hidden="true">→</span></a>
+    </aside>
+  </article>
+</Base>
+
+<script>
+  import { onPage, gsap, reducedMotion } from '../scripts/motion';
+  import { SplitText } from 'gsap/SplitText';
+  gsap.registerPlugin(SplitText);
+
+  onPage(() => {
+    const root = document.querySelector('.about');
+    if (!root || reducedMotion()) return;
+    const title = root.querySelector<HTMLElement>('[data-split-title]')!;
+    const t = SplitText.create(title, { type: 'chars', mask: 'chars' });
+    gsap.from(t.chars, { yPercent: 110, duration: 1, ease: 'expo.out', stagger: 0.03, delay: 0.15 });
+    const p = root.querySelector<HTMLElement>('[data-lines]')!;
+    const l = SplitText.create(p, { type: 'lines', mask: 'lines', aria: 'none' });
+    gsap.from(l.lines, { yPercent: 100, duration: 1, ease: 'expo.out', stagger: 0.07, delay: 0.35 });
+    gsap.utils.toArray<HTMLElement>('.fact').forEach((f, i) =>
+      gsap.from(f, { y: 40, autoAlpha: 0, duration: 0.9, ease: 'power3.out', delay: (i % 3) * 0.08, scrollTrigger: { trigger: f, start: 'top 90%' } }),
+    );
+    return () => {
+      t.revert();
+      l.revert();
+    };
+  });
+</script>
+
+<style>
+  .about {
+    padding-top: calc(var(--header-h) + clamp(2rem, 8vw, 5rem));
+  }
+  .ab-title {
+    font-size: clamp(4rem, 1.5rem + 13vw, 15rem);
+    line-height: 0.85;
+    letter-spacing: -0.03em;
+  }
+  .ab-grid {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4rem);
+    padding-block: clamp(2rem, 6vw, 4rem);
+  }
+  .portrait {
+    margin: 0;
+  }
+  .portrait-frame {
+    aspect-ratio: 4 / 5;
+    max-width: 26rem;
+    display: grid;
+    place-items: center;
+    background:
+      repeating-linear-gradient(-38deg, transparent 0 9px, color-mix(in oklab, var(--fg) 7%, transparent) 9px 10px),
+      var(--color-paper-deep);
+    border: 1px solid var(--line);
+  }
+  .ab-text {
+    display: grid;
+    gap: 1.2rem;
+    align-content: start;
+  }
+  .ab-intro {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: 1.2;
+    max-width: 32ch;
+  }
+  .ab-note {
+    justify-self: start;
+    font-size: 0.75rem;
+  }
+  .ab-tagline {
+    color: var(--fg-soft);
+    font-size: var(--step-1);
+  }
+  .ab-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 2.5rem 3rem;
+    padding-block: clamp(3rem, 8vw, 6rem);
+    border-top: 1px solid var(--line);
+  }
+  .fact {
+    display: grid;
+    gap: 0.8rem;
+    align-content: start;
+  }
+  .fact h2 {
+    color: var(--fg-soft);
+  }
+  .fact ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+  }
+  .fact li {
+    display: grid;
+    gap: 0.15rem;
+  }
+  .fact .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .chips li {
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: var(--step--1);
+  }
+  .fact-note {
+    font-size: 0.8rem;
+    color: var(--fg-soft);
+  }
+  .ab-cta {
+    display: grid;
+    gap: 0.8rem;
+    padding-block: clamp(3rem, 8vw, 6rem);
+    border-top: 1px solid var(--line);
+  }
+  .ab-cta-title {
+    font-size: var(--step-4);
+  }
+  .ab-cta-link {
+    justify-self: start;
+    margin-top: 0.6rem;
+    padding: 0.85rem 1.4rem;
+    border-radius: 999px;
+    background: var(--fg);
+    color: var(--bg);
+    font-weight: 600;
+  }
+  @media (min-width: 900px) {
+    .ab-grid {
+      grid-template-columns: 5fr 7fr;
+      align-items: start;
+    }
+  }
+</style>

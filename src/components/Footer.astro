@@ -1,0 +1,85 @@
+---
+import site from '../content/site.json';
+import { t, isPending, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <p class="display footer-name">Vega Gómez Muñoz</p>
+    <ul class="footer-links">
+      <li>
+        {
+          isPending(site.email) ? (
+            <span class="pending">{site.email}</span>
+          ) : (
+            <a class="link-underline" href={`mailto:${site.email}`}>
+              {site.email}
+            </a>
+          )
+        }
+      </li>
+      {
+        site.social.map((s) => (
+          <li>
+            {isPending(s.url) ? (
+              <span class="pending">{s.url}</span>
+            ) : (
+              <a class="link-underline" href={s.url} rel="me noopener" target="_blank">
+                {s.label}
+              </a>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+    <div class="footer-meta">
+      <p>© {year} · {t(locale, 'footer.rights')}</p>
+      <a href="#main" class="link-underline">{t(locale, 'footer.top')} ↑</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative;
+    z-index: 2;
+    border-top: 1px solid var(--line);
+    padding-block: clamp(3rem, 8vw, 6rem) 2rem;
+    font-size: var(--step--1);
+  }
+  .footer-grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+  }
+  .footer-name {
+    font-size: var(--step-3);
+  }
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.6rem;
+  }
+  .footer-meta {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    color: var(--fg-soft);
+  }
+  @media (min-width: 900px) {
+    .footer-grid {
+      grid-template-columns: 1.4fr 1fr;
+      align-items: end;
+    }
+    .footer-meta {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

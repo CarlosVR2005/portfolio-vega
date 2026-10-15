@@ -1,0 +1,128 @@
+---
+/**
+ * Lightbox global. Cualquier enlace con data-lightbox abre su href (imagen a
+ * alta resolución) en un <dialog>. Clic en la imagen = zoom ×2,4 hacia el punto;
+ * con zoom, mover el puntero desplaza la imagen. Esc o el botón cierran.
+ */
+interface Props {
+  closeLabel: string;
+  zoomLabel: string;
+}
+const { closeLabel, zoomLabel } = Astro.props;
+---
+
+<dialog class="lightbox" data-lightbox-dialog aria-label={zoomLabel}>
+  <div class="lb-frame">
+    <img class="lb-img" alt="" />
+  </div>
+  <p class="lb-caption"></p>
+  <button type="button" class="lb-close" data-lb-close>
+    <span aria-hidden="true">×</span>
+    <span class="sr-only">{closeLabel}</span>
+  </button>
+</dialog>
+
+<script>
+  import { onPage, getLenis } from '../scripts/motion';
+
+  onPage(() => {
+    const dlg = document.querySelector<HTMLDialogElement>('[data-lightbox-dialog]');
+    if (!dlg) return;
+    const img = dlg.querySelector<HTMLImageElement>('.lb-img')!;
+    const frame = dlg.querySelector<HTMLElement>('.lb-frame')!;
+    const caption = dlg.querySelector<HTMLElement>('.lb-caption')!;
+    let zoomed = false;
+
+    const setZoom = (on: boolean, e?: PointerEvent) => {
+      zoomed = on;
+      dlg.classList.toggle('is-zoomed', on);
+      if (on && e) pan(e);
+      if (!on) img.style.transformOrigin = '50% 50%';
+    };
+    const pan = (e: PointerEvent) => {
+      const r = frame.getBoundingClientRect();
+      img.style.transformOrigin = `${((e.clientX - r.left) / r.width) * 100}% ${((e.clientY - r.top) / r.height) * 100}%`;
+    };
+
+    const onClick = (e: MouseEvent) => {
+      const a = (e.target as Element).closest<HTMLAnchorElement>('a[data-lightbox]');
+      if (!a) return;
+      e.preventDefault();
+      const thumb = a.querySelector('img');
+      img.src = a.href;
+      img.alt = thumb?.alt ?? a.dataset.alt ?? '';
+      caption.textContent = a.dataset.caption ?? '';
+      caption.hidden = !a.dataset.caption;
+      setZoom(false);
+      dlg.showModal();
+      getLenis()?.stop();
+    };
+    document.addEventListener('click', onClick, true);
+    img.addEventListener('pointerdown', (e) => setZoom(!zoomed, e));
+    frame.addEventListener('pointermove', (e) => zoomed && pan(e));
+    dlg.querySelector('[data-lb-close]')!.addEventListener('click', () => dlg.close());
+    dlg.addEventListener('click', (e) => e.target === dlg && dlg.close());
+    dlg.addEventListener('close', () => {
+      getLenis()?.start();
+      img.removeAttribute('src');
+    });
+    return () => document.removeEventListener('click', onClick, true);
+  });
+</script>
+
+<style>
+  .lightbox {
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgb(12 9 8 / 0.94);
+    color: #f3eee6;
+  }
+  .lightbox::backdrop {
+    background: transparent;
+  }
+  .lb-frame {
+    position: absolute;
+    inset: 3.5rem 1rem 3rem;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  .lb-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    cursor: zoom-in;
+    transition: transform 0.5s var(--ease-out-expo);
+  }
+  .is-zoomed .lb-img {
+    transform: scale(2.4);
+    cursor: zoom-out;
+  }
+  .lb-caption {
+    position: absolute;
+    left: 1rem;
+    right: 4rem;
+    bottom: 0.9rem;
+    font-size: 0.85rem;
+    opacity: 0.8;
+  }
+  .lb-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    border: 1px solid rgb(243 238 230 / 0.3);
+    background: none;
+    color: inherit;
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+</style>

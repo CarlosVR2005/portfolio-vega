@@ -1,0 +1,16 @@
+---
+/**
+ * Imagen optimizada para todo el sitio: <picture> con AVIF + WebP y un
+ * respaldo (JPG, o PNG si la imagen tiene transparencia). Acepta las mismas
+ * props que <Image> de Astro.
+ */
+import { Picture } from 'astro:assets';
+import type { ComponentProps } from 'astro/types';
+
+type Props = ComponentProps<typeof Picture>;
+const props = Astro.props;
+const src = props.src as { format?: string };
+const fallbackFormat = src?.format === 'png' ? 'png' : 'jpg';
+---
+
+<Picture formats={['avif', 'webp']} fallbackFormat={fallbackFormat} {...props} />

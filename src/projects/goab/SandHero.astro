@@ -1,0 +1,320 @@
+---
+/**
+ * Apertura de GOAB: la criatura está hecha de partículas de arena.
+ * Al hacer scroll (sección fijada) se deshace con el viento y se recompone
+ * en otra postura, mientras aparecen las tres notas sobre la entidad.
+ */
+import { getImage } from 'astro:assets';
+import Image from '../../components/Img.astro';
+import type { Locale } from '../../i18n/ui';
+import { md } from '../../lib/md';
+import crouch from '../../assets/projects/goab/goab-crouch-cutout.png';
+import standing from '../../assets/projects/goab/pose-02-cutout.png';
+import text from '../../content/projects/goab/case.json';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  kicker: string;
+  teaser: string;
+}
+const { locale, title, kicker, teaser } = Astro.props;
+const from = await getImage({ src: crouch, width: 900, format: 'webp' });
+const to = await getImage({ src: standing, width: 523, format: 'webp' });
+const steps = text.entity.steps;
+---
+
+<section class="sand" data-sand data-from={from.src} data-to={to.src} aria-labelledby="goab-title">
+  <div class="sand-stage">
+    <div class="sand-glow" aria-hidden="true"></div>
+    <div class="sand-figure" aria-hidden="true">
+      <canvas class="sand-canvas"></canvas>
+      <Image class="sand-fallback" src={crouch} alt="" widths={[400, 640, 900, 1400]} sizes="(min-width: 1024px) 60vw, 94vw" loading="eager" fetchpriority="high" />
+    </div>
+
+    <header class="wrap sand-head">
+      <p class="eyebrow sand-kicker">{kicker}</p>
+      <h1 id="goab-title" class="display sand-title">{title}</h1>
+      <p class="sand-teaser">{teaser}</p>
+    </header>
+
+    <div class="wrap sand-notes">
+      <p class="eyebrow sand-label">{text.entity.label[locale]} — {text.entity.title[locale]}</p>
+      <ol class="sand-steps">
+        {
+          steps.map((s, i) => (
+            <li class="sand-step" data-step={i}>
+              <span class="sand-step-k">
+                <span class="sand-step-n">{String(i + 1).padStart(2, '0')}</span> {s.k[locale]}
+              </span>
+              <p set:html={md(s.text[locale])} />
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+
+    <div class="sand-progress" aria-hidden="true"><span></span></div>
+  </div>
+</section>
+
+<script>
+  import { onPage, gsap, ScrollTrigger, reducedMotion } from '../../scripts/motion';
+  import { createSandScene, type SandScene } from '../../scripts/sand-particles';
+
+  onPage(() => {
+    const root = document.querySelector<HTMLElement>('[data-sand]');
+    if (!root) return;
+    const steps = gsap.utils.toArray<HTMLElement>('.sand-step', root);
+    const head = root.querySelector<HTMLElement>('.sand-head')!;
+    const notes = root.querySelector<HTMLElement>('.sand-notes')!;
+    const bar = root.querySelector<HTMLElement>('.sand-progress span')!;
+
+    if (reducedMotion()) {
+      root.classList.add('is-static');
+      return;
+    }
+
+    let scene: SandScene | null = null;
+    let destroyed = false;
+    let progress = 0;
+    const canvas = root.querySelector<HTMLCanvasElement>('.sand-canvas')!;
+
+    createSandScene(canvas, { from: root.dataset.from!, to: root.dataset.to!, fit: 0.8, anchorX: window.innerWidth >= 1024 ? 0.38 : 0.5 })
+      .then((s) => {
+        if (destroyed) return s.destroy();
+        scene = s;
+        root.classList.add('is-live');
+        s.setProgress(progress);
+        if (progress < 0.02) s.gather(1.5);
+      })
+      .catch(() => root.classList.add('is-static'));
+
+    const dim = window.innerWidth < 768 ? 0 : 0.5;
+    gsap.set(steps, { autoAlpha: 0, y: 24 });
+    const tl = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: {
+        trigger: root,
+        start: 'top top',
+        end: () => `+=${window.innerHeight * (window.innerWidth < 768 ? 2.2 : 2.8)}`,
+        pin: root.querySelector('.sand-stage'),
+        scrub: 0.6,
+        invalidateOnRefresh: true,
+        onUpdate: (st) => {
+          // Mantiene la figura intacta al principio y al final del recorrido
+          progress = gsap.utils.clamp(0, 1, (st.progress - 0.12) / 0.76);
+          scene?.setProgress(progress);
+          bar.style.transform = `scaleX(${st.progress})`;
+        },
+      },
+    });
+    tl.to(head, { autoAlpha: 0, y: -40, duration: 0.12 }, 0.06)
+      .from(notes, { autoAlpha: 0, duration: 0.05 }, 0.1)
+      .to(steps[0], { autoAlpha: 1, y: 0, duration: 0.08 }, 0.12)
+      .to(steps[0], { autoAlpha: dim, duration: 0.06 }, 0.38)
+      .to(steps[1], { autoAlpha: 1, y: 0, duration: 0.08 }, 0.4)
+      .to(steps[1], { autoAlpha: dim, duration: 0.06 }, 0.64)
+      .to(steps[2], { autoAlpha: 1, y: 0, duration: 0.08 }, 0.66)
+      .to({}, { duration: 0.2 });
+
+    return () => {
+      destroyed = true;
+      scene?.destroy();
+      ScrollTrigger.getAll().forEach((t) => t.trigger === root && t.kill());
+    };
+  });
+</script>
+
+<style>
+  .sand {
+    position: relative;
+    color: var(--fg);
+  }
+  .sand-stage {
+    position: relative;
+    height: 100svh;
+    min-height: 34rem;
+    overflow: hidden;
+    display: grid;
+    background: var(--bg);
+  }
+  .sand-glow {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(55% 45% at 50% 58%, rgb(207 170 114 / 0.28), transparent 70%),
+      radial-gradient(90% 60% at 50% 110%, rgb(163 123 79 / 0.35), transparent 70%);
+    pointer-events: none;
+  }
+  .sand-figure {
+    position: absolute;
+    inset: var(--header-h) 0 0;
+  }
+  .sand-canvas,
+  .sand-fallback {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .sand-fallback {
+    object-fit: contain;
+    object-position: 50% 50%;
+    padding: 6% 3%;
+    transition: opacity 0.6s;
+  }
+  .sand-canvas {
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .sand.is-live .sand-canvas {
+    opacity: 1;
+  }
+  .sand.is-live .sand-fallback {
+    opacity: 0;
+  }
+
+  .sand-head {
+    position: relative;
+    z-index: 2;
+    align-self: end;
+    padding-bottom: clamp(2rem, 6vw, 4rem);
+    display: grid;
+    gap: 0.8rem;
+    pointer-events: none;
+  }
+  .sand-kicker {
+    color: var(--accent);
+  }
+  .sand-title {
+    font-size: clamp(5rem, 1rem + 20vw, 20rem);
+    line-height: 0.8;
+    letter-spacing: -0.03em;
+    mix-blend-mode: soft-light;
+    color: #f8eaae;
+  }
+  .sand-teaser {
+    max-width: 36ch;
+    font-size: var(--step-1);
+    text-wrap: balance;
+  }
+
+  .sand-notes {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 2;
+    padding-bottom: clamp(1.5rem, 5vw, 3.5rem);
+    pointer-events: none;
+  }
+  .sand-label {
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  .sand-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.2rem;
+  }
+  .sand-step {
+    max-width: 34rem;
+    padding: 1rem 1.1rem;
+    background: rgb(37 28 26 / 0.72);
+    backdrop-filter: blur(6px);
+    border-left: 2px solid var(--accent);
+  }
+  .sand-step p {
+    font-size: var(--step-0);
+    line-height: 1.5;
+  }
+  .sand-step-k {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    margin-bottom: 0.3rem;
+    color: #f8eaae;
+  }
+  .sand-step-n {
+    color: var(--accent);
+    font-size: 0.7em;
+    vertical-align: 0.2em;
+  }
+  .sand-progress {
+    position: absolute;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: 0.9rem;
+    height: 1px;
+    background: rgb(248 234 174 / 0.15);
+    z-index: 3;
+  }
+  .sand-progress span {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+
+  /* Móvil: las notas se apilan en una sola tarjeta visible a la vez */
+  @media (max-width: 767px) {
+    .sand-figure {
+      bottom: 34%;
+    }
+    .sand-steps {
+      display: grid;
+    }
+    .sand-step {
+      grid-area: 1 / 1;
+    }
+  }
+  /* Escritorio: figura a la izquierda, notas apiladas a la derecha */
+  @media (min-width: 1024px) {
+    .sand-notes {
+      inset: 0 0 0 auto;
+      width: min(40vw, 34rem);
+      display: grid;
+      align-content: center;
+      padding: var(--header-h) var(--gutter) 0 0;
+    }
+    .sand-fallback {
+      object-position: 30% 50%;
+    }
+    .sand-step {
+      background: transparent;
+      backdrop-filter: none;
+      padding-block: 0.4rem;
+    }
+  }
+
+  /* Sin animación: versión estática compuesta */
+  .sand.is-static .sand-stage {
+    height: auto;
+    min-height: 0;
+    display: block;
+    padding-top: var(--header-h);
+  }
+  .sand.is-static .sand-figure {
+    position: relative;
+    inset: auto;
+    height: 70vh;
+  }
+  .sand.is-static .sand-head,
+  .sand.is-static .sand-notes {
+    position: relative;
+    inset: auto;
+    width: auto;
+    padding-block: 2rem;
+  }
+  .sand.is-static .sand-step {
+    grid-area: auto;
+  }
+  .sand.is-static .sand-progress {
+    display: none;
+  }
+  :global(html:not(.js)) .sand-stage {
+    height: auto;
+  }
+</style>

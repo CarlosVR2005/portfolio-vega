@@ -1,0 +1,405 @@
+---
+import { getImage } from 'astro:assets';
+import Image from '../../components/Img.astro';
+import type { CollectionEntry } from 'astro:content';
+import type { ImageMetadata } from 'astro';
+import type { Locale } from '../../i18n/ui';
+import { md } from '../../lib/md';
+import Zoomable from '../../components/Zoomable.astro';
+import SandHero from './SandHero.astro';
+import ScaleScene from './ScaleScene.astro';
+import Anatomy from './Anatomy.astro';
+import text from '../../content/projects/goab/case.json';
+
+import faces from '../../assets/projects/goab/face-sketches.png';
+import head from '../../assets/projects/goab/head-sketch-cutout.png';
+import crawl from '../../assets/projects/goab/crawl-sketch-cutout.png';
+import posesColour from '../../assets/projects/goab/poses-colour.png';
+import pose1 from '../../assets/projects/goab/pose-01-cutout.png';
+import fade from '../../assets/projects/goab/goab-fade-cutout.png';
+import final from '../../assets/projects/goab/final-illustration.jpg';
+
+interface Props {
+  locale: Locale;
+  project: CollectionEntry<'projects'>;
+}
+const { locale, project } = Astro.props;
+const d = project.data;
+const es = locale === 'es';
+const zoom = text.final.zoom[locale];
+
+const silhouettes = Object.values(
+  import.meta.glob<{ default: ImageMetadata }>('../../assets/projects/goab/silhouettes/*.png', { eager: true }),
+).map((m) => m.default);
+
+const process = [
+  { src: faces, cls: 'g-faces', alt: es ? 'Hoja de bocetos del rostro de Goab: variaciones de una cabeza sin facciones con la boca derretida.' : "Sketch sheet of Goab's face: variations of a featureless head with a melting mouth." },
+  { src: head, cls: 'g-head', alt: es ? 'Boceto grande de la cabeza de Goab con sombreado sepia.' : "Large sketch of Goab's head with sepia shading." },
+  { src: posesColour, cls: 'g-poses', alt: es ? 'Dos estudios de pose a color de Goab, encorvado y erguido.' : 'Two colour pose studies of Goab, hunched and upright.' },
+  { src: pose1, cls: 'g-pose1', alt: es ? 'Estudio de color de Goab caminando encorvado.' : 'Colour study of Goab walking hunched over.' },
+  { src: crawl, cls: 'g-crawl', alt: es ? 'Boceto de Goab desplazándose a cuatro patas.' : 'Sketch of Goab crawling on all fours.' },
+  { src: fade, cls: 'g-fade', alt: es ? 'Goab agazapado cuyo cuerpo se disuelve en arena blanca.' : 'Goab crouching, its body dissolving into white sand.' },
+];
+const finalAlt = d.cover.alt[locale];
+const finalBig = await getImage({ src: final, width: 2477, format: 'webp' });
+---
+
+<SandHero locale={locale} title={d.title} kicker={d.kicker[locale]} teaser={d.teaser[locale]} />
+
+<section class="wrap concept" aria-labelledby="concept-label">
+  <p id="concept-label" class="eyebrow c-label">{text.intro.label[locale]}</p>
+  <p class="c-text" data-reveal-lines set:html={md(text.intro.text[locale])} />
+  <dl class="c-facts">
+    {
+      text.intro.facts.map((f) => (
+        <div>
+          <dt>{f.k[locale]}</dt>
+          <dd set:html={md(f.v[locale])} />
+        </div>
+      ))
+    }
+  </dl>
+</section>
+
+<section class="process" aria-labelledby="process-title">
+  <div class="wrap p-head">
+    <p class="eyebrow c-label">{text.process.label[locale]}</p>
+    <h2 id="process-title" class="display p-title">{text.process.title[locale]}</h2>
+    <p class="p-text">{text.process.text[locale]}</p>
+  </div>
+  <div class="wrap gallery">
+    {
+      process.map((p) => (
+        <figure class:list={['g-item', p.cls]} data-fade>
+          <Zoomable src={p.src} alt={p.alt} sizes="(min-width: 1024px) 45vw, 100vw" zoomLabel={zoom} />
+        </figure>
+      ))
+    }
+  </div>
+</section>
+
+<Anatomy locale={locale} />
+
+<section class="poses" data-warm aria-labelledby="poses-title">
+  <div class="wrap poses-head">
+    <p class="eyebrow">{text.poses.label[locale]}</p>
+    <h2 id="poses-title" class="display p-title">{text.poses.title[locale]}</h2>
+    <p class="p-text">{text.poses.text[locale]}</p>
+  </div>
+  <ul class="wrap sil-grid" role="list" data-silhouettes>
+    {
+      silhouettes.map((s, i) => (
+        <li class="sil">
+          <Image src={s} alt={es ? `Silueta de pose ${i + 1}` : `Pose silhouette ${i + 1}`} widths={[160, 320]} sizes="(min-width: 1024px) 12vw, 25vw" />
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<ScaleScene locale={locale} />
+
+<section class="final" aria-labelledby="final-label">
+  <div class="wrap final-copy">
+    <p id="final-label" class="eyebrow c-label">{text.final.label[locale]}</p>
+    <div class="final-cols">
+      {text.final.text.map((t, i) => <p class:list={['final-p', { lead: i === 0 }]} set:html={md(t[locale])} />)}
+    </div>
+    <a href={finalBig.src} class="final-zoom" data-lightbox data-astro-reload data-caption={`GOAB — ${text.final.label[locale]}`} data-alt={finalAlt}>
+      <span>{es ? 'Ver la ilustración a pantalla completa' : 'View the illustration full screen'}</span>
+      <span aria-hidden="true">↗</span>
+    </a>
+  </div>
+</section>
+
+<section class="wrap palette" aria-labelledby="palette-label">
+  <p id="palette-label" class="eyebrow c-label">{text.palette.label[locale]}</p>
+  <ul class="swatches" role="list">
+    {
+      text.palette.colors.map((c) => (
+        <li class="swatch" style={`--c:${c}`}>
+          <span class="swatch-chip" />
+          <code>{c}</code>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="palette-note">{text.palette.note[locale]}</p>
+  <p class="credit" set:html={md(text.credit[locale])} />
+</section>
+
+<script>
+  import { onPage, gsap, reducedMotion } from '../../scripts/motion';
+  import { SplitText } from 'gsap/SplitText';
+  gsap.registerPlugin(SplitText);
+
+  onPage(() => {
+    if (!document.querySelector('[data-silhouettes]') || reducedMotion()) return;
+
+    // Texto del concepto: líneas que suben con máscara
+    const lines = document.querySelector<HTMLElement>('[data-reveal-lines]')!;
+    const split = SplitText.create(lines, { type: 'lines', mask: 'lines', aria: 'none' });
+    gsap.from(split.lines, {
+      yPercent: 100,
+      duration: 1,
+      ease: 'expo.out',
+      stagger: 0.06,
+      scrollTrigger: { trigger: lines, start: 'top 80%' },
+    });
+
+    // Galería de proceso
+    gsap.utils.toArray<HTMLElement>('[data-fade]').forEach((el) =>
+      gsap.from(el, { y: 60, autoAlpha: 0, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%' } }),
+    );
+
+    // Siluetas en cascada
+    const sils = gsap.utils.toArray<HTMLElement>('.sil');
+    gsap.from(sils, {
+      y: 40,
+      autoAlpha: 0,
+      scale: 0.85,
+      duration: 0.7,
+      ease: 'back.out(1.6)',
+      stagger: { each: 0.06, grid: 'auto', from: 'start' },
+      scrollTrigger: { trigger: '[data-silhouettes]', start: 'top 75%' },
+    });
+
+    return () => split.revert();
+  });
+</script>
+
+<style>
+  .c-label {
+    color: var(--accent);
+  }
+  .concept {
+    display: grid;
+    gap: 2rem;
+    padding-block: clamp(5rem, 14vw, 11rem) clamp(3rem, 8vw, 6rem);
+  }
+  .c-text {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: 1.22;
+    max-width: 38ch;
+    text-wrap: pretty;
+  }
+  .c-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 1.2rem 2rem;
+    border-top: 1px solid var(--line);
+    padding-top: 1.5rem;
+    font-size: var(--step--1);
+  }
+  .c-facts dt {
+    color: var(--fg-soft);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    margin-bottom: 0.25rem;
+  }
+  @media (min-width: 1024px) {
+    .concept {
+      grid-template-columns: 1fr 3fr;
+    }
+    .c-facts {
+      grid-column: 2;
+    }
+  }
+
+  /* ---- Proceso: láminas sobre papel ---- */
+  .process {
+    padding-block: clamp(3rem, 8vw, 6rem);
+  }
+  .p-head,
+  .poses-head {
+    display: grid;
+    gap: 0.8rem;
+    margin-bottom: clamp(2rem, 5vw, 4rem);
+  }
+  .p-title {
+    font-size: var(--step-4);
+    max-width: 16ch;
+  }
+  .p-text {
+    max-width: 44ch;
+    color: var(--fg-soft);
+  }
+  .gallery {
+    display: grid;
+    gap: clamp(1rem, 2.5vw, 2rem);
+    grid-template-columns: 1fr;
+  }
+  .g-item {
+    margin: 0;
+    background: #efe6d6;
+    min-height: 6rem;
+    padding: clamp(0.75rem, 2vw, 1.5rem);
+    box-shadow: 0 30px 60px -40px rgb(0 0 0 / 0.8);
+  }
+  .g-item :global(img) {
+    mix-blend-mode: multiply;
+  }
+  .g-pose1,
+  .g-crawl,
+  .g-head {
+    display: grid;
+    place-items: center;
+  }
+  .g-pose1 :global(.zoomable),
+  .g-head :global(.zoomable) {
+    max-width: 70%;
+  }
+  @media (min-width: 768px) {
+    .gallery {
+      grid-template-columns: repeat(6, 1fr);
+    }
+    .g-faces {
+      grid-column: span 4;
+    }
+    .g-head {
+      grid-column: span 2;
+      align-self: end;
+    }
+    .g-poses {
+      grid-column: 2 / span 3;
+    }
+    .g-pose1 {
+      grid-column: span 2;
+      margin-top: 4rem;
+    }
+    .g-crawl {
+      grid-column: span 3;
+    }
+    .g-fade {
+      grid-column: span 3;
+      margin-top: -3rem;
+    }
+  }
+
+  /* ---- Siluetas sobre banda de arena ---- */
+  .poses {
+    background: #cfaa72;
+    color: #251c1a;
+    padding-block: clamp(4rem, 10vw, 8rem);
+    --fg-soft: #4c3425;
+  }
+  .poses .eyebrow {
+    color: #4c3425;
+  }
+  .sil-grid {
+    list-style: none;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(0.75rem, 2vw, 2rem) clamp(0.5rem, 1.5vw, 1.5rem);
+    align-items: end;
+  }
+  .sil :global(img) {
+    display: block;
+    width: 100%;
+    height: clamp(5rem, 14vw, 11rem);
+    object-fit: contain;
+    object-position: 50% 100%;
+  }
+  @media (min-width: 900px) {
+    .sil-grid {
+      grid-template-columns: repeat(8, 1fr);
+    }
+  }
+
+  /* ---- Ilustración final ---- */
+  .final {
+    padding-bottom: clamp(3rem, 8vw, 6rem);
+  }
+  .final-copy {
+    display: grid;
+    gap: 1.5rem;
+    padding-top: clamp(3rem, 8vw, 6rem);
+  }
+  .final-zoom {
+    justify-self: start;
+    display: inline-flex;
+    gap: 0.6rem;
+    align-items: center;
+    padding: 0.8rem 1.2rem;
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    color: var(--accent);
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    transition:
+      background 0.3s,
+      color 0.3s;
+  }
+  .final-zoom:hover {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .final-cols {
+    display: grid;
+    gap: 1.5rem;
+  }
+  .final-p {
+    max-width: 52ch;
+  }
+  .final-p.lead {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: 1.2;
+    max-width: 30ch;
+  }
+  @media (min-width: 1024px) {
+    .final-cols {
+      grid-template-columns: 1.1fr 1fr;
+      align-items: start;
+      gap: 4rem;
+    }
+  }
+
+  /* ---- Paleta y créditos ---- */
+  .palette {
+    display: grid;
+    gap: 1.5rem;
+    padding-block: clamp(2rem, 6vw, 5rem);
+  }
+  .swatches {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+  .swatch {
+    display: grid;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    color: var(--fg-soft);
+  }
+  .swatch-chip {
+    display: block;
+    aspect-ratio: 3 / 2;
+    background: var(--c);
+    box-shadow: inset 0 0 0 1px rgb(248 234 174 / 0.12);
+  }
+  @media (min-width: 768px) {
+    .swatches {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+  .palette-note {
+    font-size: var(--step--1);
+    color: var(--fg-soft);
+  }
+  .credit {
+    max-width: 62ch;
+    font-size: var(--step--1);
+    color: var(--fg-soft);
+    border-top: 1px solid var(--line);
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+  }
+</style>

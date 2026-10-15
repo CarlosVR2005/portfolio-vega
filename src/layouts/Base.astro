@@ -1,0 +1,156 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Cursor from '../components/Cursor.astro';
+import site from '../content/site.json';
+import { type Locale } from '../i18n/ui';
+
+interface World {
+  id: string;
+  bg: string;
+  ink: string;
+  accent: string;
+  muted: string;
+  cursor: string;
+}
+
+interface Props {
+  title?: string;
+  description?: string;
+  locale: Locale;
+  /** URL del mismo contenido en el otro idioma (para hreflang y el selector). */
+  alternates: { es: string; en: string };
+  world?: World;
+  ogImage?: string;
+  noindex?: boolean;
+}
+
+const { title, description, locale, alternates, world, ogImage, noindex } = Astro.props;
+const fullTitle = title ? `${title} — ${site.shortName}` : `${site.name} · ${site.role[locale]}`;
+const desc = description ?? site.taglineShort[locale];
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const og = new URL(ogImage ?? '/og.jpg', Astro.site);
+const worldStyle = world
+  ? `--world-bg:${world.bg};--world-ink:${world.ink};--world-accent:${world.accent};--world-muted:${world.muted};`
+  : undefined;
+---
+
+<!doctype html>
+<html
+  lang={locale}
+  data-world={world?.id}
+  data-cursor={world?.cursor ?? 'dot'}
+  style={worldStyle}
+  transition:animate="none"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="es" href={new URL(alternates.es, Astro.site)} />
+    <link rel="alternate" hreflang="en" href={new URL(alternates.en, Astro.site)} />
+    <link rel="alternate" hreflang="x-default" href={new URL(alternates.es, Astro.site)} />
+    <meta name="theme-color" content={world?.bg ?? '#f3eee6'} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={og} />
+    <meta property="og:locale" content={locale === 'es' ? 'es_ES' : 'en_US'} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <slot name="head" />
+    <ClientRouter fallback="swap" />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+  </head>
+  <body class="paper-grain">
+    <a href="#main" class="skip-link">{locale === 'es' ? 'Saltar al contenido' : 'Skip to content'}</a>
+    <Header locale={locale} alternates={alternates} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+
+    <div id="wipe" aria-hidden="true" transition:persist="wipe"></div>
+    <Cursor />
+
+    <script>
+      import '../scripts/motion';
+      import '../scripts/transitions';
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  .skip-link {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 300;
+    padding: 0.6rem 1rem;
+    background: var(--fg);
+    color: var(--bg);
+    translate: 0 -200%;
+    transition: translate 0.3s var(--ease-out-expo);
+  }
+  .skip-link:focus {
+    translate: 0 0;
+  }
+  main:focus {
+    outline: none;
+  }
+  #wipe {
+    position: fixed;
+    inset: -2px;
+    z-index: 150;
+    visibility: hidden;
+    pointer-events: none;
+    background: var(--wipe, var(--color-paper));
+  }
+  /* Bordes de la cortinilla: arena granulada / bruma de atardecer / papel */
+  #wipe::before,
+  #wipe::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 14vh;
+    pointer-events: none;
+    display: none;
+  }
+  #wipe::before {
+    bottom: 100%;
+  }
+  #wipe::after {
+    top: 100%;
+    rotate: 180deg;
+  }
+  #wipe[data-kind='sand']::before,
+  #wipe[data-kind='sand']::after {
+    display: block;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='1' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 .97 0 0 0 0 .92 0 0 0 0 .68 0 0 0 9 -5.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    -webkit-mask-image: linear-gradient(to top, #000, transparent);
+    mask-image: linear-gradient(to top, #000, transparent);
+  }
+  #wipe[data-kind='dusk']::before,
+  #wipe[data-kind='dusk']::after {
+    display: block;
+    background: linear-gradient(to top, #1f1b2e, transparent);
+  }
+  #wipe[data-kind='plain']::before,
+  #wipe[data-kind='plain']::after {
+    display: block;
+    height: 6vh;
+    background: linear-gradient(to top, var(--color-paper), transparent);
+  }
+</style>

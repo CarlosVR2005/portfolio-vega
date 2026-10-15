@@ -1,0 +1,110 @@
+{
+  "_comment": "Textos del caso POLAS. ES = texto de Vega corregido (ver CORRECCIONES.md). EN = traducción propuesta, pendiente de revisión.",
+  "intro": {
+    "label": { "es": "Justificación", "en": "Rationale" },
+    "text": {
+      "es": "Este fanzine utiliza una estética oscura y surrealista como metáfora de un «tripi» emocional y psicológico. A través de imágenes fragmentadas, contrastes fuertes y símbolos inquietantes, transmite la sensación de meterse dentro de los propios pensamientos y verse en tercera persona, donde la realidad se distorsiona y las emociones se intensifican. La obra no busca contar una historia lineal, sino transmitir una experiencia mental caótica e introspectiva.",
+      "en": "This fanzine uses a dark, surreal aesthetic as a metaphor for an emotional and psychological \"trip\". Through fragmented images, strong contrasts and unsettling symbols, it conveys the feeling of stepping inside your own thoughts and seeing yourself in the third person, where reality warps and emotions intensify. Rather than tell a linear story, it aims to convey a chaotic, introspective state of mind."
+    },
+    "facts": [
+      { "k": { "es": "Formato", "en": "Format" }, "v": { "es": "Fanzine ilustrado", "en": "Illustrated fanzine" } },
+      { "k": { "es": "Técnica", "en": "Technique" }, "v": { "es": "Bolígrafo sobre papel, ajuste digital", "en": "Ballpoint pen on paper, digital finish" } },
+      { "k": { "es": "Paleta", "en": "Palette" }, "v": { "es": "Negro, blancos y grises", "en": "Black, whites and greys" } },
+      { "k": { "es": "Contexto", "en": "Context" }, "v": { "es": "Proyecto académico · Bellas Artes, UFV", "en": "Academic project · Fine Arts, UFV" } }
+    ]
+  },
+  "synopsis": {
+    "label": { "es": "Sinopsis", "en": "Synopsis" },
+    "text": {
+      "es": "El fanzine representa un recorrido visual inspirado en la sensación de un tripi. Mediante ilustraciones surrealistas, composiciones oscuras y detalles psicodélicos, mezcla emociones, recuerdos y pensamientos dentro de una atmósfera inquietante y absorbente. Cada página funciona como un fragmento de una mente en constante transformación.",
+      "en": "The fanzine is a visual journey inspired by the feeling of a trip. With surreal illustrations, dark compositions and psychedelic details, it blends emotions, memories and thoughts in an unsettling, immersive atmosphere. Each page works as a fragment of a mind in constant transformation."
+    }
+  },
+  "pages": {
+    "label": { "es": "El fanzine", "en": "The fanzine" },
+    "title": { "es": "Pasa las páginas", "en": "Turn the pages" },
+    "hint": { "es": "Desliza para pasar páginas", "en": "Scroll to turn the pages" },
+    "items": [
+      {
+        "img": "spread-01-treehouse",
+        "alt": { "es": "Doble página: una casa en un árbol retorcido sobre un campo de amapolas, dibujada a bolígrafo.", "en": "Spread: a house in a twisted tree above a field of poppies, drawn in ballpoint pen." },
+        "text": { "es": "En un pueblo en las afueras, rodeado de amapolas, vivía Trini, una artista que llevaba semanas sin terminar su obra. Los pinceles descansaban secos en un bote y las paredes del estudio parecían vacías, aunque estuvieran llenas de dibujos.", "en": "In a village on the outskirts, surrounded by poppies, lived Trini, an artist who hadn't finished a piece in weeks. Her brushes sat dry in a jar and the studio walls looked empty, even though they were covered in drawings." }
+      },
+      {
+        "img": "poppies",
+        "alt": { "es": "Doble página: amapolas y capullos dibujados a bolígrafo.", "en": "Spread: poppies and buds drawn in ballpoint pen." },
+        "text": null
+      },
+      {
+        "img": "spread-02-poppy-hand",
+        "alt": { "es": "Doble página negra: una mano sostiene una amapola por el tallo.", "en": "Black spread: a hand holds a poppy by its stem." },
+        "text": { "es": "Cada mañana salía al campo buscando algo que la hiciera recuperar la magia de sus obras. Pero el viento solo movía las flores y el silencio le pesaba más que nunca. Una tarde, mientras arrancaba amapolas distraída, decidió probar una.", "en": "Every morning she went out to the fields looking for something to bring the magic back to her work. But the wind only stirred the flowers, and the silence weighed on her more than ever. One afternoon, absent-mindedly picking poppies, she decided to taste one." }
+      },
+      {
+        "img": "spread-03-snail-girl",
+        "alt": { "es": "Doble página: una rama con un caracol enorme y Trini leyendo sentada en el suelo.", "en": "Spread: a branch with a huge snail and Trini sitting on the ground, reading." },
+        "text": { "es": "Solo un cielo más brillante, la hierba más alta, los caracoles más grandes y el sonido de los insectos, como si escondieran secretos.", "en": "Only a brighter sky, taller grass, bigger snails, and the sound of insects, as if they were hiding secrets." }
+      },
+      {
+        "img": "spread-04-eye-child",
+        "alt": { "es": "Doble página: los ojos de Trini en primer plano miran a una figura diminuta con la columna a la vista.", "en": "Spread: Trini's eyes in close-up look at a tiny figure with an exposed spine." },
+        "text": null
+      },
+      {
+        "img": "spread-05-face-flow",
+        "alt": { "es": "Doble página: el rostro de Trini se deshace en ramas y formas marinas.", "en": "Spread: Trini's face dissolves into branches and sea-like shapes." },
+        "text": { "es": "Entonces ocurrió: los insectos se volvieron marinos y ella tenía su mismo tamaño… Todo empezó a fluir, y ella fluyó con ellos. Las ramas parecían brazos largos señalando caminos increíbles. Todo parecía más vivo que nunca.", "en": "Then it happened: the insects turned into sea creatures and she was their size… Everything began to flow, and she flowed with them. The branches looked like long arms pointing to incredible paths. Everything felt more alive than ever." }
+      }
+    ]
+  },
+  "process": {
+    "label": { "es": "Técnica", "en": "Technique" },
+    "title": { "es": "Todo empieza en un cuaderno", "en": "It all starts in a sketchbook" },
+    "text": {
+      "es": "Todas las ilustraciones están hechas a bolígrafo: quería trabajar con esta técnica y, sobre todo en los árboles, buscaba un trazo garabateado con sensación de movimiento. Después lo ajusté todo en digital. Para la tipografía busqué una letra que transmitiera intimidad.",
+      "en": "Every illustration is drawn in ballpoint pen: I wanted to work with this technique and, especially for the trees, I was after a scribbled line with a sense of movement. Then I adjusted everything digitally. For the typography I looked for a typeface that felt intimate."
+    },
+    "alts": [
+      { "es": "Cuaderno abierto con notas manuscritas y el esquema de las páginas del fanzine.", "en": "Open sketchbook with handwritten notes and the fanzine's page plan." },
+      { "es": "Cuaderno con un árbol retorcido a bolígrafo y notas.", "en": "Sketchbook with a twisted ballpoint tree and notes." },
+      { "es": "Boceto a bolígrafo de una rama con un caracol.", "en": "Ballpoint sketch of a branch with a snail." },
+      { "es": "Boceto a bolígrafo del rostro de Trini fundiéndose con ramas.", "en": "Ballpoint sketch of Trini's face merging with branches." },
+      { "es": "Cuaderno con los ojos de Trini y la figura de la columna.", "en": "Sketchbook with Trini's eyes and the spine figure." },
+      { "es": "Cuaderno con amapolas dibujadas a bolígrafo.", "en": "Sketchbook with ballpoint-pen poppies." }
+    ]
+  },
+  "perception": {
+    "label": { "es": "Personaje", "en": "Character" },
+    "title": { "es": "Un personaje que cambia su propia percepción", "en": "A character who changes her own perception" },
+    "steps": [
+      { "es": "Trini, leyendo.", "en": "Trini, reading." },
+      { "es": "Su cuerpo se vuelve transparente.", "en": "Her body turns transparent." },
+      { "es": "El rostro se abre en ramas.", "en": "Her face opens into branches." },
+      { "es": "Se mira desde fuera.", "en": "She looks at herself from outside." }
+    ],
+    "alts": [
+      { "es": "Trini sentada en el suelo leyendo un libro.", "en": "Trini sitting on the floor reading a book." },
+      { "es": "Perfil de Trini con la columna vertebral a la vista.", "en": "Trini in profile with her spine exposed." },
+      { "es": "Rostro de Trini que se deshace en ramas.", "en": "Trini's face dissolving into branches." },
+      { "es": "Los ojos de Trini observan su propia figura diminuta.", "en": "Trini's eyes watching her own tiny figure." }
+    ]
+  },
+  "poppies": {
+    "label": { "es": "Amapolas", "en": "Poppies" },
+    "text": { "es": "El motivo que lo desencadena todo, convertido en patrón.", "en": "The motif that sets everything off, turned into a pattern." }
+  },
+  "object": {
+    "label": { "es": "El objeto", "en": "The object" },
+    "title": { "es": "Portada y edición", "en": "Cover and print" },
+    "alts": {
+      "cover": { "es": "Portada de POLAS: tentáculos blancos rayados a bolígrafo sobre negro y el título en serif fina.", "en": "POLAS cover: white ballpoint-hatched tentacles on black with the title in a thin serif." },
+      "hand": { "es": "Una mano sostiene el fanzine POLAS sobre un pedestal blanco.", "en": "A hand holds the POLAS fanzine above a white plinth." },
+      "pattern": { "es": "Mockup de papel con el patrón de amapolas blancas sobre negro.", "en": "Paper mockup with the white-on-black poppy pattern." }
+    }
+  },
+  "palette": {
+    "label": { "es": "Paleta", "en": "Palette" },
+    "note": { "es": "Muestreada de la lámina de color del proyecto.", "en": "Sampled from the project colour sheet." },
+    "colors": ["#0d0d0d", "#505050", "#8f8f8f", "#cdcdcd", "#ffffff"]
+  }
+}

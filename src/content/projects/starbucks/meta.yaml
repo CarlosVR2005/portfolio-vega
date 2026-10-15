@@ -1,0 +1,33 @@
+order: 3
+slug: { es: campana-starbucks, en: starbucks-campaign }
+title: Starbucks
+kicker: { es: "Campaña conceptual · Ilustración", en: "Concept campaign · Illustration" }
+year: "2025"  # [PENDIENTE: confirmar año]
+discipline: { es: "Ilustración publicitaria", en: "Advertising illustration" }
+teaser:
+  es: "Tres escenas cinematográficas —4 de julio, Navidad y US Open— con la luz cálida y el tono narrativo de la animación clásica."
+  en: "Three cinematic scenes —Fourth of July, Christmas and the US Open— with the warm light and storytelling of classic animation."
+disclaimer:
+  es: "Proyecto académico · campaña conceptual sin vinculación con Starbucks."
+  en: "Academic project · concept campaign, not affiliated with Starbucks."
+world:
+  id: starbucks
+  # Degradado de la portada del PDF (#aaa5be → #c9977a) + muestreo de las 3 piezas
+  bg: "#2a3257"
+  ink: "#f6ebe1"
+  accent: "#d1713b"
+  muted: "#aaa5be"
+  cursor: glow
+  transition: dusk
+  wipe: "linear-gradient(180deg, #1f1b2e 0%, #444c76 30%, #aaa5be 60%, #c9977a 82%, #d1713b 100%)"
+cover:
+  src: ../../../assets/projects/starbucks/july-4th.png
+  position: "50% 30%"
+  alt:
+    es: "Ilustración del 4 de julio: fuegos artificiales sobre los tejados de Nueva York al anochecer, con una pareja tomando café en una azotea."
+    en: "Fourth of July illustration: fireworks over New York rooftops at dusk, with a couple drinking coffee on a roof."
+fragment:
+  src: ../../../assets/projects/starbucks/christmas.png
+  alt:
+    es: "Ilustración navideña: un muñeco de nieve sonriente bajo guirnaldas de luces, con dos personas tomando café."
+    en: "Christmas illustration: a smiling snowman under string lights with two people having coffee."

@@ -1,0 +1,140 @@
+{
+  "_comment": "Textos del caso de estudio GOAB. ES = texto de Vega corregido (ver CORRECCIONES.md). EN = traducción propuesta, pendiente de revisión por Vega.",
+  "intro": {
+    "label": { "es": "El proyecto", "en": "The project" },
+    "text": {
+      "es": "Este proyecto parte de una reinterpretación visual del entorno de Goab de *La historia interminable*, transformándolo en una entidad monstruosa de arena. La propuesta busca convertir el paisaje en un personaje activo que representa la lucha interna del protagonista. A través de un diseño inestable y dinámico, se explora la dualidad entre fortaleza y pérdida de identidad. El objetivo es generar una imagen con carga simbólica, donde lo físico y lo psicológico se integren.",
+      "en": "This project starts from a visual reinterpretation of Goab, the desert from *The Neverending Story*, turning it into a monstrous sand entity. The idea is to make the landscape an active character that embodies the protagonist's inner struggle. Through an unstable, dynamic design, it explores the duality between strength and the loss of identity. The goal is an image charged with symbolism, where the physical and the psychological merge."
+    },
+    "facts": [
+      { "k": { "es": "Disciplina", "en": "Discipline" }, "v": { "es": "Concept art · Diseño de personaje y entorno", "en": "Concept art · Character & environment design" } },
+      { "k": { "es": "Técnica", "en": "Technique" }, "v": { "es": "Pintura digital", "en": "Digital painting" } },
+      { "k": { "es": "Contexto", "en": "Context" }, "v": { "es": "Proyecto académico · Bellas Artes, UFV", "en": "Academic project · Fine Arts, UFV" } },
+      { "k": { "es": "Inspiración", "en": "Inspiration" }, "v": { "es": "*La historia interminable*, Michael Ende", "en": "*The Neverending Story*, Michael Ende" } }
+    ]
+  },
+  "entity": {
+    "label": { "es": "La entidad", "en": "The entity" },
+    "title": { "es": "Un desierto que se levanta", "en": "A desert that rises" },
+    "steps": [
+      {
+        "k": { "es": "Forma", "en": "Form" },
+        "text": {
+          "es": "Entidad de gran tamaño y morfología humanoide, compuesta por arena compactada y fragmentada. Estructura irregular, con extremidades deformadas y zonas en descomposición; el rostro es incompleto, con rasgos apenas definidos que refuerzan su carácter inestable.",
+          "en": "A huge entity with a humanoid build, made of compacted, fragmented sand. Its structure is irregular, with deformed limbs and decaying areas; the face is incomplete, its barely defined features reinforcing its unstable nature."
+        }
+      },
+      {
+        "k": { "es": "Significado", "en": "Meaning" },
+        "text": {
+          "es": "Representa una fuerza interna en conflicto, asociada al proceso de transformación del protagonista. Su comportamiento es impredecible: oscila entre la agresividad y la disolución.",
+          "en": "It stands for an inner force in conflict, tied to the protagonist's transformation. Its behaviour is unpredictable, swinging between aggression and dissolution."
+        }
+      },
+      {
+        "k": { "es": "Origen", "en": "Origin" },
+        "text": {
+          "es": "Surge del desierto de Goab, un entorno hostil formado por dunas de arena de colores. Actúa como manifestación física del estado emocional del protagonista.",
+          "en": "It emerges from the Desert of Goab, a hostile place of coloured sand dunes, as the physical manifestation of the protagonist's emotional state."
+        }
+      }
+    ]
+  },
+  "process": {
+    "label": { "es": "Proceso", "en": "Process" },
+    "title": { "es": "Buscar una cara que no lo es", "en": "Searching for a face that isn't one" },
+    "text": {
+      "es": "Bocetos de rostro, estudios de postura y pruebas de color hasta encontrar una anatomía que se sostiene y se deshace a la vez.",
+      "en": "Face sketches, posture studies and colour tests until finding an anatomy that holds itself together and falls apart at the same time."
+    }
+  },
+  "anatomy": {
+    "label": { "es": "Hoja de anatomía", "en": "Anatomy sheet" },
+    "title": { "es": "Anatomía de Goab", "en": "Goab's anatomy" },
+    "hint": { "es": "Toca o pasa por los puntos para leer las notas de Vega.", "en": "Tap or hover the points to read Vega's notes." },
+    "spots": [
+      {
+        "id": "tail",
+        "x": 0.085, "y": 0.27,
+        "k": { "es": "Cola", "en": "Tail" },
+        "text": { "es": "Es la cola que adopta en breves ocasiones: una muestra de que tiene rasgos zoológicos.", "en": "The tail it takes on from time to time, a sign of its animal traits." }
+      },
+      {
+        "id": "skull",
+        "x": 0.39, "y": 0.15,
+        "k": { "es": "Cráneo", "en": "Skull" },
+        "text": { "es": "Aunque su cara no sea humana, su cráneo sí lo es.", "en": "Although its face isn't human, its skull is." }
+      },
+      {
+        "id": "bastian",
+        "x": 0.545, "y": 0.27,
+        "k": { "es": "Bastian", "en": "Bastian" },
+        "text": { "es": "Bastian es el chico protagonista: de carácter dócil, humilde, incluso débil, pero de buen corazón.", "en": "Bastian, the boy protagonist: gentle, humble, even weak, but kind-hearted." }
+      },
+      {
+        "id": "symbol",
+        "x": 0.86, "y": 0.3,
+        "k": { "es": "Símbolo", "en": "Symbol" },
+        "text": { "es": "El símbolo de Goab, una de sus personificaciones: remolinos de arena que se esfuman. Es la forma que adopta cuando quiere camuflarse entre la gente.", "en": "Goab's symbol, one of its personifications: swirls of sand that fade away. It's the form it takes when it wants to blend in among people." }
+      },
+      {
+        "id": "face",
+        "x": 0.535, "y": 0.6,
+        "k": { "es": "Rostro", "en": "Face" },
+        "text": { "es": "Su cara es la forma en que la arena se derrite en la boca; no tiene facciones, por su falta de personalidad.", "en": "Its face is the way the sand melts into the mouth; it has no features, for its lack of personality." }
+      },
+      {
+        "id": "foot",
+        "x": 0.11, "y": 0.8,
+        "k": { "es": "Pie", "en": "Foot" },
+        "text": { "es": "Un pie formado por huesos humanos, pero distinto de uno humano: huesos más grandes y rígidos, y unos grandes tendones que son lo más destacable.", "en": "A foot made of human bones, yet unlike a human one: bigger, stiffer bones, with large tendons as its most striking feature." }
+      },
+      {
+        "id": "movement",
+        "x": 0.82, "y": 0.78,
+        "k": { "es": "Movimiento", "en": "Movement" },
+        "text": { "es": "Uno de los movimientos que adopta. Es muy ágil, porque sus articulaciones están muy encogidas.", "en": "One of the ways it moves. It's very agile, because its joints are tightly hunched." }
+      }
+    ]
+  },
+  "poses": {
+    "label": { "es": "Estudio de siluetas", "en": "Silhouette study" },
+    "title": { "es": "Dieciséis maneras de ocupar el espacio", "en": "Sixteen ways to take up space" },
+    "text": {
+      "es": "Antes del detalle, la mancha: siluetas para comprobar que la criatura se lee a primera vista.",
+      "en": "Before detail, the blot: silhouettes to check that the creature reads at a glance."
+    }
+  },
+  "scale": {
+    "label": { "es": "Escala", "en": "Scale" },
+    "lines": [
+      { "es": "Un fuerte contraste de escala", "en": "A stark contrast in scale" },
+      { "es": "para enfatizar la vulnerabilidad del personaje", "en": "to stress the character's vulnerability" },
+      { "es": "frente a la magnitud de la criatura.", "en": "before the sheer size of the creature." },
+      { "es": "Son la misma persona en distintas versiones.", "en": "They are the same person, in different versions." }
+    ]
+  },
+  "final": {
+    "label": { "es": "Ilustración final", "en": "Final illustration" },
+    "text": [
+      {
+        "es": "La ilustración final representa el enfrentamiento simbólico entre el protagonista y la entidad Goab en un entorno desértico.",
+        "en": "The final illustration depicts the symbolic confrontation between the protagonist and Goab in a desert setting."
+      },
+      {
+        "es": "La composición sitúa a Goab como figura dominante, emergiendo del propio paisaje y fusionándose con él. El uso de tonos cálidos y la representación del movimiento de la arena refuerzan la sensación de calor, tensión y dinamismo. La escena no solo muestra un conflicto físico, sino una confrontación interna proyectada en el espacio.",
+        "en": "The composition makes Goab the dominant figure, rising out of the landscape and merging with it. The warm palette and the movement of the sand heighten the sense of heat, tension and momentum. The scene shows not just a physical fight but an inner confrontation projected into space."
+      }
+    ],
+    "zoom": { "es": "Ampliar", "en": "Zoom in" }
+  },
+  "palette": {
+    "label": { "es": "Paleta", "en": "Palette" },
+    "note": { "es": "Muestreada de la ilustración final.", "en": "Sampled from the final illustration." },
+    "colors": ["#251c1a", "#4c3425", "#755f49", "#a37b4f", "#cfaa72", "#f8eaae"]
+  },
+  "credit": {
+    "es": "Reinterpretación visual inspirada en *La historia interminable* (*Die unendliche Geschichte*), novela de Michael Ende. Proyecto académico sin ánimo comercial; el universo y los personajes originales pertenecen a sus autores.",
+    "en": "A visual reinterpretation inspired by *The Neverending Story* (*Die unendliche Geschichte*), the novel by Michael Ende. Non-commercial academic project; the original world and characters belong to their authors."
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "_comment": "Datos de Vega. Todo lo marcado [PENDIENTE: ...] se muestra tal cual en la web hasta que se complete. Para el CV, deja el PDF en /public/cv/ y pon aquí su ruta (p. ej. /cv/vega-gomez-cv.pdf).",
+  "name": "Vega Gómez Muñoz",
+  "shortName": "Vega Gómez",
+  "role": { "es": "Ilustradora", "en": "Illustrator" },
+  "tagline": {
+    "es": "[FRASE DE VEGA] · Propuesta: Ilustración narrativa entre lo onírico y lo cinematográfico.",
+    "en": "[VEGA'S LINE] · Proposal: Narrative illustration between the dreamlike and the cinematic."
+  },
+  "taglineShort": {
+    "es": "Ilustración narrativa entre lo onírico y lo cinematográfico.",
+    "en": "Narrative illustration between the dreamlike and the cinematic."
+  },
+  "location": { "es": "Madrid", "en": "Madrid, Spain" },
+  "studies": {
+    "es": "4º de Bellas Artes · Universidad Francisco de Vitoria",
+    "en": "Fine Arts, 4th year · Universidad Francisco de Vitoria"
+  },
+  "email": "[PENDIENTE: email]",
+  "social": [
+    { "label": "Instagram", "url": "[PENDIENTE: Instagram]" },
+    { "label": "Behance", "url": "[PENDIENTE: Behance]" },
+    { "label": "LinkedIn", "url": "[PENDIENTE: LinkedIn]" }
+  ],
+  "cv": "[PENDIENTE: CV en PDF]",
+  "formEndpoint": "[PENDIENTE: endpoint del formulario (Formspree o Web3Forms)]",
+  "availability": {
+    "es": "[PENDIENTE: disponibilidad — p. ej. abierta a prácticas en ilustración y dirección de arte]",
+    "en": "[PENDING: availability — e.g. open to internships in illustration and art direction]"
+  },
+  "about": {
+    "portrait": "[PENDIENTE: retrato]",
+    "intro": {
+      "es": "Estudio 4º de Bellas Artes en la Universidad Francisco de Vitoria, en Madrid. Dibujo a bolígrafo, pinto en digital y cambio de estilo según lo que pida cada historia.",
+      "en": "I'm in my fourth year of Fine Arts at Universidad Francisco de Vitoria, in Madrid. I draw in ballpoint pen, paint digitally and change style to suit each story."
+    },
+    "introNote": {
+      "es": "Texto provisional, escrito a partir de sus proyectos: pendiente de que Vega lo revise.",
+      "en": "Placeholder text based on her projects, pending Vega's review."
+    },
+    "bioLong": {
+      "es": "[PENDIENTE: bio larga — de dónde viene, qué le interesa, qué busca]",
+      "en": "[PENDING: long bio — background, interests, what she's looking for]"
+    },
+    "education": [
+      {
+        "title": { "es": "Grado en Bellas Artes (4º curso)", "en": "BA in Fine Arts (4th year)" },
+        "place": "Universidad Francisco de Vitoria, Madrid",
+        "years": "[PENDIENTE: años]"
+      }
+    ],
+    "techniques": {
+      "es": ["Dibujo a bolígrafo y tinta", "Pintura digital", "Ilustración digital", "Diseño de personajes", "Concept art", "Ilustración editorial (fanzine)", "Ilustración publicitaria"],
+      "en": ["Ballpoint pen and ink drawing", "Digital painting", "Digital illustration", "Character design", "Concept art", "Editorial illustration (fanzine)", "Advertising illustration"]
+    },
+    "software": "[PENDIENTE: software (p. ej. Procreate, Photoshop…)]",
+    "exhibitions": "[PENDIENTE: exposiciones]",
+    "awards": "[PENDIENTE: premios]",
+    "experience": "[PENDIENTE: prácticas / experiencia]",
+    "languages": "[PENDIENTE: idiomas]"
+  }
+}
