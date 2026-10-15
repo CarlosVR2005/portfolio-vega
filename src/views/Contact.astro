@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Field from '../components/Field.astro';
+import SocialLinks from '../components/SocialLinks.astro';
 import site from '../content/site.json';
 import { routes, isPending, type Locale } from '../i18n/ui';
 
@@ -81,21 +82,7 @@ const L = es
         <div>
           <dt class="eyebrow">{L.social}</dt>
           <dd>
-            <ul class="c-social" role="list">
-              {
-                site.social.map((s) => (
-                  <li>
-                    {isPending(s.url) ? (
-                      <Field value={s.url} />
-                    ) : (
-                      <a class="link-underline" href={s.url} target="_blank" rel="me noopener">
-                        {s.label} <span aria-hidden="true">↗</span>
-                      </a>
-                    )}
-                  </li>
-                ))
-              }
-            </ul>
+            <SocialLinks locale={locale} size="lg" />
           </dd>
         </div>
         <div>
@@ -237,13 +224,6 @@ const L = es
   .c-big {
     font-family: var(--font-display);
     font-size: var(--step-2);
-  }
-  .c-social {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 0.4rem;
   }
   .c-cv {
     display: inline-flex;

@@ -1,0 +1,100 @@
+---
+/**
+ * Redes de Vega como iconos (Instagram, LinkedIn…). Se leen de site.json.
+ * Cada enlace tiene nombre accesible y tooltip; si una red no tiene icono
+ * definido aquí, se muestra su nombre en texto.
+ * Iconos monocromos (currentColor) para que funcionen en todos los mundos.
+ */
+import site from '../content/site.json';
+import { isPending, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  size?: 'sm' | 'lg';
+}
+const { locale, size = 'sm' } = Astro.props;
+const links = site.social.filter((s) => !isPending(s.url));
+const label = (name: string) => (locale === 'es' ? `${name} de ${site.shortName}` : `${site.shortName} on ${name}`);
+const known = ['instagram', 'linkedin'];
+---
+
+<ul class:list={['social', size]} role="list">
+  {
+    links.map((s) => {
+      const key = s.label.toLowerCase();
+      return (
+        <li>
+          <a href={s.url} target="_blank" rel="me noopener" aria-label={label(s.label)} title={s.label} class:list={['social-link', { 'is-text': !known.includes(key) }]}>
+            {key === 'instagram' && (
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <rect x="2.75" y="2.75" width="18.5" height="18.5" rx="5.25" fill="none" stroke="currentColor" stroke-width="1.8" />
+                <circle cx="12" cy="12" r="4.25" fill="none" stroke="currentColor" stroke-width="1.8" />
+                <circle cx="17.4" cy="6.6" r="1.15" fill="currentColor" />
+              </svg>
+            )}
+            {key === 'linkedin' && (
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path
+                  fill="currentColor"
+                  fill-rule="evenodd"
+                  d="M5 2.5h14A2.5 2.5 0 0 1 21.5 5v14a2.5 2.5 0 0 1-2.5 2.5H5A2.5 2.5 0 0 1 2.5 19V5A2.5 2.5 0 0 1 5 2.5Zm1.6 7.4v8.2h2.7V9.9H6.6Zm1.35-4.1a1.55 1.55 0 1 0 0 3.1 1.55 1.55 0 0 0 0-3.1Zm2.95 4.1v8.2h2.7v-4.3c0-1.2.4-2.1 1.6-2.1 1.1 0 1.4.9 1.4 2.1v4.3h2.7v-4.9c0-2.5-1.1-3.5-3.1-3.5-1.3 0-2.1.6-2.6 1.3V9.9h-2.7Z"
+                />
+              </svg>
+            )}
+            {!known.includes(key) && <span>{s.label}</span>}
+          </a>
+        </li>
+      );
+    })
+  }
+</ul>
+
+<style>
+  .social {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .social-link {
+    display: inline-grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    color: var(--fg);
+    transition:
+      background 0.3s,
+      color 0.3s,
+      border-color 0.3s,
+      transform 0.4s var(--ease-out-expo);
+  }
+  .social-link svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+  .social-link:hover,
+  .social-link:focus-visible {
+    background: var(--fg);
+    color: var(--bg);
+    border-color: var(--fg);
+    transform: translateY(-2px);
+  }
+  .social-link.is-text {
+    width: auto;
+    padding-inline: 1rem;
+    border-radius: 999px;
+    font-size: var(--step--1);
+  }
+  .lg .social-link {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+  .lg .social-link svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+</style>

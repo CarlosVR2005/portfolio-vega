@@ -6,7 +6,6 @@ Lo que falta para publicar. Casi todo se rellena en `src/content/site.json`; mie
 
 - [x] **Email de contacto**: vegagmart@gmail.com.
 - [x] **Redes**: Instagram y LinkedIn añadidos.
-- [ ] **Behance**: ¿tiene? Si no, se quita de `site.json` y desaparece de la web.
 - [ ] **CV en PDF**: se guarda en `public/cv/` y se enlaza desde Contacto.
 - [ ] **Retrato** para Sobre mí (vertical 4:5, buena resolución).
 - [ ] **Frase que la defina**: la portada muestra ahora la propuesta *"Ilustración narrativa entre lo onírico y lo cinematográfico"* con la marca `[FRASE DE VEGA]`.
