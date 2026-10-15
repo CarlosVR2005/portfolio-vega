@@ -69,3 +69,16 @@ Textos nuevos (no estaban en el PDF): "Pasa las páginas", "Todo empieza en un c
 ⚠️ **En la ilustración del US Open, la pancarta de la pista dice "STARBUKS"** (falta la C). Está dentro de la obra; conviene corregirlo en el archivo fuente y reexportar.
 
 Textos nuevos: la descripción breve de cada escena, el aviso legal ("Proyecto académico… sin vinculación, patrocinio ni encargo de Starbucks…") y los nombres de los mockups.
+
+## Tefnut
+
+| Original (PDF) | En la web | Tipo |
+|---|---|---|
+| nace del pétalo… de Ra, **condensándose** en frío, bruma y rocío | …de Ra **y se condensa** en frío, bruma y rocío | Estilo |
+| Tras la separación forzada de los **hermano** | …de los **hermanos** | Errata |
+| queda anclada entre **Gen y Núñez** | queda anclada entre **Geb y Nut** | ⚠️ Parece una autocorrección: Geb (la tierra) y Nut (el cielo) son los hijos de Shu y Tefnut. Confirmar |
+| su unión los vuelve inestables, juntos se **componen… y** a la vez se disuelven | …inestables: juntos se componen y, a la vez, se disuelven | Puntuación |
+
+⚠️ **Texto no publicado:** en la página 5 del PDF, bajo el título "Tefnut", los apartados **"Psicología" y "Contexto" describen a Shu**, no a Tefnut ("Shu es el dios del aire…", "Shu nace de Ra…"). No se han puesto en la web hasta que Vega confirme si van en este proyecto (quizá como el personaje complementario) o si se colaron de otro trabajo. Si los quiere, contienen estas erratas: *antre* → entre, *omplementan* → complementan, *seprar* → separar, *unenn* → unen.
+
+Textos nuevos: el resumen breve ("reimaginada como una figura con cabeza de leona hecha de bruma, rocío y tormenta"), la ficha y los pies de las imágenes de la galería.

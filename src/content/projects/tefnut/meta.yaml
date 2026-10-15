@@ -1,0 +1,87 @@
+order: 4
+slug: { es: tefnut, en: tefnut }
+title: Tefnut
+kicker: { es: "Diseño de personaje · Pintura digital", en: "Character design · Digital painting" }
+year: "2025"  # [PENDIENTE: confirmar año]
+discipline: { es: "Diseño de personaje", en: "Character design" }
+teaser:
+  es: "Tefnut, la diosa egipcia de la humedad, reimaginada como una figura con cabeza de leona hecha de bruma, rocío y tormenta."
+  en: "Tefnut, the Egyptian goddess of moisture, reimagined as a lion-headed figure made of mist, dew and storm."
+
+world:
+  id: tefnut
+  # Paleta de la lámina de color del propio proyecto (PDF, pág. 3)
+  bg: "#291b45"
+  ink: "#c7e4ed"
+  accent: "#efd561"
+  # UI: lavanda #826f9a aclarada para contraste AA sobre el fondo
+  muted: "#a796bd"
+  cursor: dot
+  transition: dusk
+  wipe: "linear-gradient(180deg, #c7e4ed 0%, #826f9a 40%, #3d2659 75%, #291b45 100%)"
+
+cover:
+  src: ../../../assets/projects/tefnut/final-illustration.jpg
+  position: "55% 30%"
+  alt:
+    es: "Tefnut, diosa con cabeza de leona y melena violeta, flota entre nubes azules envuelta en velos, con un orbe de agua sobre la cabeza."
+    en: "Tefnut, a lion-headed goddess with violet hair, floats among blue clouds wrapped in veils, a water orb above her head."
+fragment:
+  src: ../../../assets/projects/tefnut/tefnut-cutout.png
+  alt:
+    es: "Tefnut recortada sobre nubes."
+    en: "Tefnut cut out over clouds."
+
+intro:
+  es: "Tefnut, diosa egipcia de la humedad, nace del pétalo que cae al vacío desde la flor de loto de Ra y se condensa en frío, bruma y rocío. Tras la separación forzada de los hermanos, queda anclada entre Geb y Nut: su existencia fertiliza y calma, pero también puede desatar tormentas. Ama a Shu y lo complementa, aunque su unión los vuelve inestables: juntos se componen y, a la vez, se disuelven."
+  en: "Tefnut, the Egyptian goddess of moisture, is born from a petal that falls into the void from Ra's lotus flower, condensing into cold, mist and dew. After the siblings are forcibly separated, she is left anchored between Geb and Nut: her existence brings fertility and calm, but can also unleash storms. She loves Shu and complements him, yet their union makes them unstable: together they form, and at the same time dissolve."
+facts:
+  - { k: { es: Disciplina, en: Discipline }, v: { es: "Diseño de personaje", en: "Character design" } }
+  - { k: { es: Técnica, en: Technique }, v: { es: "Pintura digital", en: "Digital painting" } }
+  - { k: { es: Proceso, en: Process }, v: { es: "Rostro, anatomía, turnaround y accesorios", en: "Face, anatomy, turnaround and props" } }
+  - { k: { es: Inspiración, en: Inspiration }, v: { es: "Mitología egipcia", en: "Egyptian mythology" } }
+
+gallery:
+  - src: ../../../assets/projects/tefnut/turnaround.jpg
+    wide: true
+    caption: { es: "Turnaround: vista frontal y trasera", en: "Turnaround: front and back views" }
+    alt:
+      es: "Turnaround a color de Tefnut de frente y de espaldas, con velo blanco, joyas doradas y melena violeta."
+      en: "Colour turnaround of Tefnut from the front and back, with a white veil, gold jewellery and violet hair."
+  - src: ../../../assets/projects/tefnut/face-sketches.jpg
+    caption: { es: "Estudios de rostro", en: "Face studies" }
+    alt:
+      es: "Hoja de bocetos a lápiz del rostro de leona de Tefnut con distintas expresiones."
+      en: "Pencil sketch sheet of Tefnut's lioness face with different expressions."
+  - src: ../../../assets/projects/tefnut/accessories.jpg
+    caption: { es: "Accesorios: cetro, báculo y anillo", en: "Props: sceptre, staff and ring" }
+    alt:
+      es: "Diseño de accesorios: un cetro y un báculo plateados con orbes de agua azul y un anillo."
+      en: "Prop designs: a silver sceptre and staff with blue water orbs, and a ring."
+  - src: ../../../assets/projects/tefnut/body-sketches.jpg
+    caption: { es: "Anatomía", en: "Anatomy" }
+    alt:
+      es: "Cuatro bocetos de cuerpo de Tefnut desde distintos ángulos."
+      en: "Four body sketches of Tefnut from different angles."
+  - src: ../../../assets/projects/tefnut/line-sketches.jpg
+    caption: { es: "Bocetos de pose", en: "Pose sketches" }
+    alt:
+      es: "Bocetos de línea de Tefnut en varias poses, sentada y flotando."
+      en: "Line sketches of Tefnut in several poses, sitting and floating."
+  - src: ../../../assets/projects/tefnut/pose-sketch.jpg
+    caption: { es: "Boceto en grises", en: "Greyscale sketch" }
+    alt:
+      es: "Boceto en escala de grises de Tefnut flotando con la melena al viento."
+      en: "Greyscale sketch of Tefnut floating with her hair in the wind."
+  - src: ../../../assets/projects/tefnut/colour-sketch.jpg
+    wide: true
+    caption: { es: "Prueba de color sobre el boceto", en: "Colour test over the sketch" }
+    alt:
+      es: "Boceto de la pose final con las primeras manchas de color: piel dorada, melena violeta y joyas."
+      en: "Sketch of the final pose with the first colour blocks: golden skin, violet hair and jewellery."
+  - src: ../../../assets/projects/tefnut/landscape.jpg
+    wide: true
+    caption: { es: "Entorno: una cueva de agua y bruma", en: "Setting: a cave of water and mist" }
+    alt:
+      es: "Paisaje pintado de una cueva con estalactitas, un lago violeta y una luz blanca que entra desde arriba."
+      en: "Painted landscape of a cave with stalactites, a violet lake and white light coming from above."
