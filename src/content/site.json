@@ -16,11 +16,11 @@
     "es": "4º de Bellas Artes · Universidad Francisco de Vitoria",
     "en": "Fine Arts, 4th year · Universidad Francisco de Vitoria"
   },
-  "email": "[PENDIENTE: email]",
+  "email": "vegagmart@gmail.com",
   "social": [
-    { "label": "Instagram", "url": "[PENDIENTE: Instagram]" },
+    { "label": "Instagram", "url": "https://www.instagram.com/gomezvegaart/" },
     { "label": "Behance", "url": "[PENDIENTE: Behance]" },
-    { "label": "LinkedIn", "url": "[PENDIENTE: LinkedIn]" }
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/vega-gomez-mu%C3%B1oz-716304444/" }
   ],
   "cv": "[PENDIENTE: CV en PDF]",
   "formEndpoint": "[PENDIENTE: endpoint del formulario (Formspree o Web3Forms)]",

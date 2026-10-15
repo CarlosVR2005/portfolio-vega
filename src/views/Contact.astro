@@ -10,6 +10,9 @@ interface Props {
 const { locale } = Astro.props;
 const es = locale === 'es';
 const formReady = !isPending(site.formEndpoint);
+// Sin servicio de envío configurado, el formulario abre el correo con el mensaje listo (mailto)
+const mailFallback = !formReady && !isPending(site.email);
+const formEnabled = formReady || mailFallback;
 const L = es
   ? {
       title: 'Contacto',
@@ -27,6 +30,8 @@ const L = es
       ok: 'Gracias, mensaje enviado. Te responderé lo antes posible.',
       err: 'No se ha podido enviar. Prueba otra vez o escríbeme por email.',
       notReady: 'El formulario se activará cuando esté configurado el servicio de envío.',
+      mailto: 'Al enviar se abrirá tu programa de correo con el mensaje preparado.',
+      subject: 'Contacto desde el portfolio',
       required: 'Este campo es obligatorio.',
       invalidMail: 'Revisa el email: parece que no es válido.',
       short: 'Cuéntame un poco más (mínimo 10 caracteres).',
@@ -48,6 +53,8 @@ const L = es
       ok: 'Thanks, your message is on its way. I’ll reply as soon as I can.',
       err: 'It couldn’t be sent. Please try again or email me.',
       notReady: 'The form will be enabled once the delivery service is set up.',
+      mailto: 'Sending will open your email app with the message ready.',
+      subject: 'Contact from the portfolio',
       required: 'This field is required.',
       invalidMail: 'Please check the email address.',
       short: 'Tell me a bit more (at least 10 characters).',
@@ -99,9 +106,10 @@ const L = es
         </div>
       </dl>
 
-      <form class="c-form" data-contact-form action={formReady ? site.formEndpoint : undefined} method="post" novalidate>
+      <form class="c-form" data-contact-form action={formReady ? site.formEndpoint : undefined} data-mailto={mailFallback ? site.email : undefined} data-subject={L.subject} method="post" novalidate>
         <p class="eyebrow c-form-title">{L.form}</p>
-        {!formReady && <p class="pending c-notice">{L.notReady}</p>}
+        {!formEnabled && <p class="pending c-notice">{L.notReady}</p>}
+        {mailFallback && <p class="c-hint">{L.mailto}</p>}
         <div class="field">
           <label for="cf-name">{L.name}</label>
           <input id="cf-name" name="name" type="text" autocomplete="name" required maxlength="120" aria-describedby="cf-name-err" />
@@ -123,7 +131,7 @@ const L = es
           <input id="cf-company" name="company" type="text" tabindex="-1" autocomplete="off" />
         </div>
         <input type="hidden" name="_lang" value={locale} />
-        <button type="submit" class="c-send" disabled={!formReady} data-sending={L.sending}>{L.send}</button>
+        <button type="submit" class="c-send" disabled={!formEnabled} data-sending={L.sending}>{L.send}</button>
         <p class="c-status" role="status" aria-live="polite" data-ok={L.ok} data-err={L.err}></p>
       </form>
     </div>
@@ -161,6 +169,14 @@ const L = es
       }
       const data = new FormData(form);
       if (data.get('company')) return; // bot
+      if (form.dataset.mailto) {
+        const subject = `${form.dataset.subject} — ${data.get('name')}`;
+        const body = `${data.get('message')}
+
+— ${data.get('name')} <${data.get('email')}>`;
+        window.location.href = `mailto:${form.dataset.mailto}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        return;
+      }
       if (!form.action) return;
       const label = btn.textContent;
       btn.disabled = true;
@@ -243,6 +259,10 @@ const L = es
     display: grid;
     gap: 1.2rem;
     align-content: start;
+  }
+  .c-hint {
+    font-size: 0.8rem;
+    color: var(--fg-soft);
   }
   .c-notice {
     justify-self: start;

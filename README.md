@@ -117,7 +117,7 @@ gallery:
 ### Editar datos de Vega
 Todo está en `src/content/site.json`. Cualquier valor que empiece por `[PENDIENTE` se muestra en la web con un recuadro discontinuo, para que nada falte sin que se note. Ejemplos:
 - **CV:** deja el PDF en `public/cv/vega-gomez-cv.pdf` y pon `"cv": "/cv/vega-gomez-cv.pdf"`.
-- **Formulario:** crea un formulario en [Formspree](https://formspree.io) o [Web3Forms](https://web3forms.com) y pega la URL de envío en `"formEndpoint"`. Hasta entonces, el botón aparece desactivado con un aviso.
+- **Formulario:** crea un formulario en [Formspree](https://formspree.io) o [Web3Forms](https://web3forms.com) y pega la URL de envío en `"formEndpoint"`. Hasta entonces, el formulario abre el programa de correo del visitante con el mensaje preparado para el email de `site.json`.
 - **Redes y email:** sustituye los `[PENDIENTE: …]` por las URLs reales.
 
 ### Textos de interfaz
